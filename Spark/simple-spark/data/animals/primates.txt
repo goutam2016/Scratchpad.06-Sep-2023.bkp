@@ -1,0 +1,11 @@
+bonobo
+lemur
+gorilla
+orangutan
+human
+baboon
+galago
+tarsier
+lesula
+macaque
+gibbon
