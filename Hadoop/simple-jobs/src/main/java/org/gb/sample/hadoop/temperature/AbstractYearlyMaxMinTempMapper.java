@@ -15,14 +15,24 @@ public abstract class AbstractYearlyMaxMinTempMapper extends Mapper<LongWritable
 		String[] parts = line.split(getSeparator());
 		String year = parts[0];
 		String[] temps = parts[1].split(",");
-		String maxTemp = temps[0];
-		String minTemp = temps[1];
+		String maxTempAsString = temps[0];
+		String minTempAsString = temps[1];
 
-		String yearlyMax = year.concat(",").concat(maxTemp);
-		String yearlyMin = year.concat(",").concat(minTemp);
+		String yearlyMax = year.concat(",").concat(maxTempAsString);
+		String yearlyMin = year.concat(",").concat(minTempAsString);
 
 		context.write(new Text("max-temp"), new Text(yearlyMax));
 		context.write(new Text("min-temp"), new Text(yearlyMin));
+		
+		int maxTemp = Integer.parseInt(maxTempAsString);
+		int minTemp = Integer.parseInt(minTempAsString);
+		
+		if(maxTemp > 35) {
+			context.getCounter(Thresholds.ABOVE_35).increment(1);
+		}
+		if(minTemp < 0) {
+			context.getCounter(Thresholds.BELOW_FREEZING).increment(1);
+		}
 	}
 	
 	abstract String getSeparator();
