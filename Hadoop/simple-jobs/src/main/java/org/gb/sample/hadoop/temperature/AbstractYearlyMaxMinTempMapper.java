@@ -6,13 +6,13 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class YearlyMaxMinTempMapper extends Mapper<LongWritable, Text, Text, Text> {
+public abstract class AbstractYearlyMaxMinTempMapper extends Mapper<LongWritable, Text, Text, Text> {
 
 	@Override
 	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, Text, Text>.Context context)
 			throws IOException, InterruptedException {
 		String line = value.toString();
-		String[] parts = line.split(":");
+		String[] parts = line.split(getSeparator());
 		String year = parts[0];
 		String[] temps = parts[1].split(",");
 		String maxTemp = temps[0];
@@ -24,4 +24,6 @@ public class YearlyMaxMinTempMapper extends Mapper<LongWritable, Text, Text, Tex
 		context.write(new Text("max-temp"), new Text(yearlyMax));
 		context.write(new Text("min-temp"), new Text(yearlyMin));
 	}
+	
+	abstract String getSeparator();
 }
