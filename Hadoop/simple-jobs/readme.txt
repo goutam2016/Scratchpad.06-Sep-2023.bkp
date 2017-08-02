@@ -12,3 +12,9 @@
 5.	Then run WordCountMain from another command prompt.
 	hadoop jar simple-jobs\target\simple-jobs-0.0.1-SNAPSHOT.jar 
 	org.gb.sample.hadoop.WordCountMain -conf simple-jobs\conf\hadoop-localhost.xml wordcount wordcount/output
+	
+	
+	hadoop org.gb.sample.hadoop.income.Main 
+	hdfs://vbox-ubuntu-hsc-node-1:9000/Scratchpad/simple-jobs/income/name-vs-income.txt 
+	hdfs://vbox-ubuntu-hsc-node-1:9000/Scratchpad/simple-jobs/income/person-profile.txt 
+	hdfs://vbox-ubuntu-hsc-node-1:9000/Scratchpad/simple-jobs/income/output

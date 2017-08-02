@@ -16,7 +16,7 @@
 "Michell","Throssell",55433.00
 "Edgar","Kanne",35421.00
 "Dewitt","Julio",30000.00
-"Charisse","Spinello",
+"Charisse","Spinello",41320.00
 "Mee","Lapinski",42700.00
 "Peter","Gutierres",27830.00
 "Octavio","Salvadore",19250.00

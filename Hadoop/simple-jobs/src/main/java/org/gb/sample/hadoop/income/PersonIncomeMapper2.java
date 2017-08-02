@@ -14,13 +14,12 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class PersonIncomeMapper extends Mapper<LongWritable, Text, Text, PersonIncome> {
+public class PersonIncomeMapper2 extends Mapper<LongWritable, Text, IncomeWritable, PersonIncome> {
 
-	private final Text MAP_OUTPUT_KEY = new Text("PERSON_INCOMES");
 	private Map<PersonName, PersonProfile> personNameVsProfile;
 
 	@Override
-	protected void setup(Mapper<LongWritable, Text, Text, PersonIncome>.Context context)
+	protected void setup(Mapper<LongWritable, Text, IncomeWritable, PersonIncome>.Context context)
 			throws IOException, InterruptedException {
 		String personProfileFileName = context.getConfiguration().get("PERSON_PROFILE_METADATA");
 		Path personProfilePath = FileSystems.getDefault().getPath(personProfileFileName);
@@ -28,6 +27,7 @@ public class PersonIncomeMapper extends Mapper<LongWritable, Text, Text, PersonI
 				.toMap(profile -> new PersonName(profile.getFirstName(), profile.getLastName()), Function.identity());
 		personNameVsProfile = Files.lines(personProfilePath).map(this::convertLineToPersProfile)
 				.collect(personNameVsProfileCollector);
+		System.out.println("completed setup.");
 	}
 
 	private PersonProfile convertLineToPersProfile(String persProfileLine) {
@@ -50,7 +50,7 @@ public class PersonIncomeMapper extends Mapper<LongWritable, Text, Text, PersonI
 	}
 
 	@Override
-	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, Text, PersonIncome>.Context context)
+	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, IncomeWritable, PersonIncome>.Context context)
 			throws IOException, InterruptedException {
 		String incomeWithNameLine = value.toString().replace("\"", "");
 		String[] parts = incomeWithNameLine.split(",");
@@ -64,7 +64,10 @@ public class PersonIncomeMapper extends Mapper<LongWritable, Text, Text, PersonI
 		personIncome.setIncome(new BigDecimal(parts[2]));
 		personIncome.setCompanyName(profile.getCompanyName());
 		personIncome.setEmailAddress(profile.getEmailAddress());
+		
+		System.out.println("From map task, FirstName: " + personIncome.getFirstName() + ", Income: " + personIncome.getIncome());
 
-		context.write(MAP_OUTPUT_KEY, personIncome);
+		IncomeWritable incomeWritable = new IncomeWritable(personIncome.getIncome());
+		context.write(incomeWritable, personIncome);
 	}
 }

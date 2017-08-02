@@ -14,17 +14,58 @@ public class PersonIncome implements Writable {
 	private BigDecimal income;
 	private String companyName;
 	private String emailAddress;
+	
+	String getFirstName() {
+		return firstName;
+	}
+	void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	String getLastName() {
+		return lastName;
+	}
+	void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	BigDecimal getIncome() {
+		return income;
+	}
+	void setIncome(BigDecimal income) {
+		this.income = income;
+	}
+
+	String getCompanyName() {
+		return companyName;
+	}
+	void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+	String getEmailAddress() {
+		return emailAddress;
+	}
+	void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
 
 	@Override
 	public void write(DataOutput out) throws IOException {
-		// TODO Auto-generated method stub
-
+		out.writeUTF(firstName);
+		out.writeUTF(lastName);
+		out.writeUTF(income.toString());
+		out.writeUTF(companyName);
+		out.writeUTF(emailAddress);
 	}
 
 	@Override
 	public void readFields(DataInput in) throws IOException {
-		// TODO Auto-generated method stub
-
+		firstName = in.readUTF();
+		lastName = in.readUTF();
+		income = new BigDecimal(in.readUTF());
+		companyName = in.readUTF();
+		emailAddress = in.readUTF();
 	}
 
 }
