@@ -34,7 +34,7 @@ public class NameVsIncomeDataGenerator {
 		Random randomIncomeGenerator = new Random();
 		for (PersonProfile personProfile : personProfiles) {
 			BigDecimal randomIncome = BigDecimal.valueOf(baseIncome + randomIncomeGenerator.nextInt(maxVarIncome));
-			String nameVsIncomeRecordLine = String.join(", ", personProfile.getFirstName(), personProfile.getLastName(),
+			String nameVsIncomeRecordLine = String.join(",", personProfile.getFirstName(), personProfile.getLastName(),
 					randomIncome.toString());
 			writer.println(nameVsIncomeRecordLine);
 		}

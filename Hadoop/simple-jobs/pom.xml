@@ -10,8 +10,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<hadoop.version>2.7.1</hadoop.version>
+		<apache.commons.csv.version>1.4</apache.commons.csv.version>
 		<maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
-		<maven.jar.plugin.version>2.4</maven.jar.plugin.version>
+		<maven.shade.plugin.version>3.0.0</maven.shade.plugin.version>
 	</properties>
 
 	<dependencies>
@@ -19,12 +20,19 @@
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-common</artifactId>
 			<version>${hadoop.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-mapreduce-client-core</artifactId>
 			<version>${hadoop.version}</version>
-		</dependency>		
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>${apache.commons.csv.version}</version>
+		</dependency>			
 	</dependencies>
 
 	<build>
@@ -38,6 +46,22 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>${maven.shade.plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+ 					<finalName>uber-${artifactId}-${version}</finalName>
+				</configuration>
+			</plugin>			
 		</plugins>
 	</build>
 

@@ -2,19 +2,21 @@ package org.gb.sample.hadoop.income;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.hadoop.mapreduce.Reducer;
 
 public class TopIncomeReducer2 extends Reducer<IncomeWritable, PersonIncome, BigDecimal, BriefPersonProfile> {
 
-	private PersonIncome copyPersonIncome(PersonIncome origPersIncome) {
-		PersonIncome copiedPersIncome = new PersonIncome();
-		copiedPersIncome.setFirstName(origPersIncome.getFirstName());
-		copiedPersIncome.setLastName(origPersIncome.getLastName());
-		copiedPersIncome.setIncome(origPersIncome.getIncome());
-		copiedPersIncome.setCompanyName(origPersIncome.getCompanyName());
-		copiedPersIncome.setEmailAddress(origPersIncome.getEmailAddress());
-		return copiedPersIncome;
+	private Map<BigDecimal, List<BriefPersonProfile>> incomeVsPersProfiles;
+
+	@Override
+	protected void setup(Reducer<IncomeWritable, PersonIncome, BigDecimal, BriefPersonProfile>.Context context)
+			throws IOException, InterruptedException {
+		incomeVsPersProfiles = new LinkedHashMap<>();
 	}
 
 	private BriefPersonProfile createBriefPersProfile(PersonIncome personIncome) {
@@ -30,13 +32,33 @@ public class TopIncomeReducer2 extends Reducer<IncomeWritable, PersonIncome, Big
 			Reducer<IncomeWritable, PersonIncome, BigDecimal, BriefPersonProfile>.Context context)
 			throws IOException, InterruptedException {
 
-		Iterator<PersonIncome> itr = values.iterator();
-		PersonIncome personIncome = null;
-
-		if (itr.hasNext()) {
-			personIncome = itr.next();
+		if (incomeVsPersProfiles.size() > 10) {
+			return;
 		}
 
-		context.write(key.getIncome(), createBriefPersProfile(personIncome));
+		List<BriefPersonProfile> briefPersonProfiles = new ArrayList<>();
+		values.forEach(persIncome -> briefPersonProfiles.add(createBriefPersProfile(persIncome)));
+
+		incomeVsPersProfiles.put(key.getIncome(), briefPersonProfiles);
+	}
+
+	private void writeIncomeWithPersProfile(BigDecimal income, List<BriefPersonProfile> briefPersonProfiles,
+			Reducer<IncomeWritable, PersonIncome, BigDecimal, BriefPersonProfile>.Context context) {
+
+		for (BriefPersonProfile briefPersonProfile : briefPersonProfiles) {
+			try {
+				context.write(income, briefPersonProfile);
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	protected void cleanup(Reducer<IncomeWritable, PersonIncome, BigDecimal, BriefPersonProfile>.Context context)
+			throws IOException, InterruptedException {
+
+		incomeVsPersProfiles.forEach(
+				(income, briefPersonProfiles) -> writeIncomeWithPersProfile(income, briefPersonProfiles, context));
 	}
 }
