@@ -31,6 +31,7 @@ public class NameVsIncomeDataGenerator {
 		try {
 			List<PersonProfile> personProfiles = loadPersonProfiles(personProfileFileName);
 			generateNameVsIncomeRecords(personProfiles, nameVsIncomeFileName);
+			System.out.printf("Created name-vs-income records for %d persons.", personProfiles.size());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -86,10 +87,10 @@ public class NameVsIncomeDataGenerator {
 		profile.setPhoneNumber2(persProfileRecord.get(8));
 		profile.setEmailAddress(persProfileRecord.get(9));
 		profile.setWebsite(persProfileRecord.get(10));
-		System.out.println(String.format(
+		/*System.out.println(String.format(
 				"Parsed with commons-csv: first-name: %s, last-name: %s, company: %s, address: %s, city: %s, post-code: %s.",
 				profile.getFirstName(), profile.getLastName(), profile.getCompanyName(), profile.getAddress(),
-				profile.getCity(), profile.getPostCode()));
+				profile.getCity(), profile.getPostCode()));*/
 		return profile;
 	}
 
