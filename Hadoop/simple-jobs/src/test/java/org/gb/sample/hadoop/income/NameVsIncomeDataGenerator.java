@@ -7,7 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
@@ -30,8 +35,17 @@ public class NameVsIncomeDataGenerator {
 
 		try {
 			List<PersonProfile> personProfiles = loadPersonProfiles(personProfileFileName);
-			generateNameVsIncomeRecords(personProfiles, nameVsIncomeFileName);
-			System.out.printf("Created name-vs-income records for %d persons.", personProfiles.size());
+			boolean repeatedPersProfile = checkRepeatedPersProfile(personProfiles);
+
+			if (repeatedPersProfile) {
+				System.err.println("Some person profiles are repeated, resolve these and retry.");
+				return;
+			}
+
+			// generateNameVsIncomeRecords(personProfiles,
+			// nameVsIncomeFileName);
+			// System.out.printf("Created name-vs-income records for %d
+			// persons.", personProfiles.size());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -87,10 +101,13 @@ public class NameVsIncomeDataGenerator {
 		profile.setPhoneNumber2(persProfileRecord.get(8));
 		profile.setEmailAddress(persProfileRecord.get(9));
 		profile.setWebsite(persProfileRecord.get(10));
-		/*System.out.println(String.format(
-				"Parsed with commons-csv: first-name: %s, last-name: %s, company: %s, address: %s, city: %s, post-code: %s.",
-				profile.getFirstName(), profile.getLastName(), profile.getCompanyName(), profile.getAddress(),
-				profile.getCity(), profile.getPostCode()));*/
+		/*
+		 * System.out.println(String.format(
+		 * "Parsed with commons-csv: first-name: %s, last-name: %s, company: %s, address: %s, city: %s, post-code: %s."
+		 * , profile.getFirstName(), profile.getLastName(),
+		 * profile.getCompanyName(), profile.getAddress(), profile.getCity(),
+		 * profile.getPostCode()));
+		 */
 		return profile;
 	}
 
@@ -100,4 +117,28 @@ public class NameVsIncomeDataGenerator {
 				.collect(Collectors.toList());
 	}
 
+	private static boolean checkRepeatedPersProfile(List<PersonProfile> personProfiles) {
+		Collector<PersonName, ?, Map<PersonName, Long>> personNameVsCountCollector = Collectors
+				.groupingBy(Function.identity(), Collectors.counting());
+		Map<PersonName, Long> personNameVsCount = personProfiles.stream()
+				.map(persProfile -> new PersonName(persProfile.getFirstName(), persProfile.getLastName()))
+				.collect(personNameVsCountCollector);
+
+		boolean repeatedPersProfile = false;
+		int totalRepeatedRecords = 0;
+		Set<Entry<PersonName, Long>> personNameVsCountEntries = personNameVsCount.entrySet();
+
+		for (Entry<PersonName, Long> entry : personNameVsCountEntries) {
+			PersonName personName = entry.getKey();
+			Long count = entry.getValue();
+			if (count.intValue() > 1) {
+				totalRepeatedRecords = totalRepeatedRecords + count.intValue();
+				repeatedPersProfile = true;
+				System.out.println(String.format("%s %s appear %d times.", personName.getFirstPart(),
+						personName.getLastPart(), count.intValue()));
+			}
+		}
+		System.err.println(String.format("%d records need correction.", totalRepeatedRecords));
+		return repeatedPersProfile;
+	}
 }
