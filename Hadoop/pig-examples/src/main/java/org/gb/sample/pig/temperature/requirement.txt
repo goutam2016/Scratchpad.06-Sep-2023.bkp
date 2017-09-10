@@ -1,0 +1,1 @@
+Write a pig script that would find the years when the maximum temperature was at least 35 degrees. Use a UDF to evaluate the max. temperature.   

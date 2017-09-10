@@ -8,6 +8,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.JobCounter;
 import org.apache.hadoop.mapreduce.TaskCounter;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -87,11 +88,14 @@ public class Main extends Configured implements Tool {
 		
 		System.out.printf("This job took %2.6f seconds.\n", jobDuration);
 
+		int mapTasks = (int) job.getCounters().findCounter(JobCounter.TOTAL_LAUNCHED_MAPS).getValue();
+		int reduceTasks = (int) job.getCounters().findCounter(JobCounter.TOTAL_LAUNCHED_REDUCES).getValue();
 		long mapInputRecords = job.getCounters().findCounter(TaskCounter.MAP_INPUT_RECORDS).getValue();
 		long mapOutputRecords = job.getCounters().findCounter(TaskCounter.MAP_OUTPUT_RECORDS).getValue();
 		long reduceInputRecords = job.getCounters().findCounter(TaskCounter.REDUCE_INPUT_RECORDS).getValue();
 		long reduceOutputRecords = job.getCounters().findCounter(TaskCounter.REDUCE_OUTPUT_RECORDS).getValue();
 
+		System.out.println(String.format("Total map tasks: %d, reduce tasks: %d.", mapTasks, reduceTasks));
 		System.out.printf(
 				"mapInputRecords: %d, mapOutputRecords: %d, reduceInputRecords: %d, reduceOutputRecords: %d.\n",
 				mapInputRecords, mapOutputRecords, reduceInputRecords, reduceOutputRecords);
