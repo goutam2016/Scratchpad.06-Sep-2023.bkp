@@ -1,7 +1,7 @@
 -- pig -x local pig-examples/scripts/countPerIncomeBand.pig
 
 REGISTER pig-examples/target/pig-examples-0.0.1-SNAPSHOT.jar;
-DEFINE incomeBand org.gb.sample.pig.income.IncomeBandFinder();
+DEFINE incomeBand org.gb.sample.pig.income.IncomeBandFinder('0,30000,50000,70000');
 
 nameVsIncome = LOAD 'pig-examples/data/income/name-vs-income_500.txt' USING PigStorage(',') AS (firstName:chararray,lastName:chararray,income:int);
 nameVsIncomeBands = FOREACH nameVsIncome GENERATE incomeBand(income) as incomeBand, firstName, lastName;
