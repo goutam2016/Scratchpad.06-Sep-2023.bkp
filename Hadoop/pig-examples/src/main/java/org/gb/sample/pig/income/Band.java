@@ -17,4 +17,15 @@ public class Band {
 	Integer getUpperLimit() {
 		return upperLimit;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(String.valueOf(lowerLimit.intValue()));
+		if (upperLimit == null) {
+			return sb.append("+").toString();
+		} else {
+			sb = sb.append(" - ").append(upperLimit.intValue());
+			return sb.toString();
+		}
+	}
 }
