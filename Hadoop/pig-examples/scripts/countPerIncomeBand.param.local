@@ -1,0 +1,3 @@
+incomeSlabs=0,30000,50000,70000
+nameVsIncomeDataFile=pig-examples/data/income/name-vs-income_500.txt
+outputPath=pig-examples/data/income/output/
