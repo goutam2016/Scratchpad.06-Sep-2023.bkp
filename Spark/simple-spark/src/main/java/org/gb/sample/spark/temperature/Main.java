@@ -16,7 +16,7 @@ import scala.Tuple2;
 public class Main {
 
 	public static void main(String[] args) {
-		SparkConf conf = new SparkConf().setMaster("local").setAppName("Max-min temperature finder");
+		SparkConf conf = new SparkConf().setAppName("Max-min temperature finder");
 		JavaSparkContext sc = new JavaSparkContext(conf);
 		String inputFile = args[0];
 		JavaRDD<String> lines = sc.textFile(inputFile);

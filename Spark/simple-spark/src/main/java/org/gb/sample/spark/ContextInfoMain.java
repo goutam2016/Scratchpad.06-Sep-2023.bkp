@@ -8,7 +8,7 @@ import scala.Tuple2;
 public class ContextInfoMain {
 
 	public static void main(String[] args) {
-		SparkConf conf = new SparkConf().setMaster("local").setAppName("Spark Context Information");
+		SparkConf conf = new SparkConf().setAppName("Spark Context Information");
 		JavaSparkContext sc = new JavaSparkContext(conf);
 		String sparkHome = sc.getSparkHome().get();
 		String appName = sc.appName();
