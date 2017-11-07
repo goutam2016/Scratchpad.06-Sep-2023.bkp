@@ -1,7 +1,11 @@
 package org.gb.sample.spark.income;
 
-public class PersonProfile {
+import java.io.Serializable;
 
+public class PersonProfile implements Serializable {
+
+	private static final long serialVersionUID = 1555645534082679173L;
+	
 	private String firstName;
 	private String lastName;
 	private String companyName;

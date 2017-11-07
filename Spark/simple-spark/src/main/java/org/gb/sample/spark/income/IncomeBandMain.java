@@ -22,6 +22,12 @@ public class IncomeBandMain {
 	}
 
 	private static void showCountPerIncomeBand(JavaRDD<String> nameVsIncomeLines, List<Integer> incomeSlabs) {
+		JavaRDD<Band> incomeBands = nameVsIncomeLines.map(nameVsIncomeLine -> nameVsIncomeLine.split(","))
+				.filter(tokenizedNameVsIncomeLine -> tokenizedNameVsIncomeLine.length == 3)
+				.map(tokenizedNameVsIncomeLine -> mapToBand(tokenizedNameVsIncomeLine[2], incomeSlabs))
+				.filter(band -> band != null);
+		int noOfPartitions = incomeBands.rdd().getNumPartitions();
+		System.out.printf("No. of partitions: %d.\n", noOfPartitions);
 		Map<Band, Long> countPerIncomeBand = nameVsIncomeLines.map(nameVsIncomeLine -> nameVsIncomeLine.split(","))
 				.filter(tokenizedNameVsIncomeLine -> tokenizedNameVsIncomeLine.length == 3)
 				.map(tokenizedNameVsIncomeLine -> mapToBand(tokenizedNameVsIncomeLine[2], incomeSlabs))
