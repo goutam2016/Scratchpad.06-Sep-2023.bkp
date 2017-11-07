@@ -21,8 +21,8 @@ import org.apache.commons.csv.CSVRecord;
 
 public class NameVsIncomeDataGenerator {
 
-	private static final String DEFAULT_PERSON_PROFILE_FILENAME = "input/income/person-profile.txt";
-	private static final String DEFAULT_NAME_VS_INCOME_FILENAME = "input/income/name-vs-income.txt";
+	private static final String DEFAULT_PERSON_PROFILE_FILENAME = "data/income/person-profile.txt";
+	private static final String DEFAULT_NAME_VS_INCOME_FILENAME = "data/income/name-vs-income.txt";
 
 	public static void main(String[] args) {
 		String personProfileFileName = DEFAULT_PERSON_PROFILE_FILENAME;
@@ -42,10 +42,8 @@ public class NameVsIncomeDataGenerator {
 				return;
 			}
 
-			// generateNameVsIncomeRecords(personProfiles,
-			// nameVsIncomeFileName);
-			// System.out.printf("Created name-vs-income records for %d
-			// persons.", personProfiles.size());
+			generateNameVsIncomeRecords(personProfiles, nameVsIncomeFileName);
+			System.out.printf("Created name-vs-income records for %d persons.", personProfiles.size());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
