@@ -14,7 +14,7 @@ import org.junit.Test;
 public class IncomeBandMapperUnitTest {
 
 	private static JavaSparkContext sparkContext;
-	private IncomeBandMapper incomeBandMapper = new IncomeBandMapper();
+	private IncomeBandMapper incomeBandMapper;
 
 	@BeforeClass
 	public static void setupForAll() {
@@ -46,7 +46,8 @@ public class IncomeBandMapperUnitTest {
 		final Band band3 = new Band(incomeSlab3, null);
 
 		// Invoke test target
-		Map<Band, Long> countPerIncomeBand = incomeBandMapper.getCountPerIncomeBand(nameVsIncomeLines, incomeSlabs);		
+		incomeBandMapper = new IncomeBandMapper(nameVsIncomeLines, incomeSlabs);
+		Map<Band, Long> countPerIncomeBand = incomeBandMapper.getCountPerIncomeBand();		
 		
 		// Verify results
 		Assert.assertEquals(countPerIncomeBand.get(band1).longValue(), count1);

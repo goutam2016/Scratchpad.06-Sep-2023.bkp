@@ -17,7 +17,8 @@ public class IncomeBandMain {
 		String nameVsIncomeFile = args[0];
 		List<Integer> incomeSlabs = Stream.of(args[1].split(",")).map(Integer::parseInt).collect(Collectors.toList());
 		JavaRDD<String> nameVsIncomeLines = sparkContext.textFile(nameVsIncomeFile);
-		Map<Band, Long> countPerIncomeBand = new IncomeBandMapper().getCountPerIncomeBand(nameVsIncomeLines, incomeSlabs);
+		IncomeBandMapper incomeBandMapper = new IncomeBandMapper(nameVsIncomeLines, incomeSlabs);
+		Map<Band, Long> countPerIncomeBand = incomeBandMapper.getCountPerIncomeBand();
 		countPerIncomeBand.forEach((band, count) -> System.out.println(band + " : " + count));
 		sparkContext.close();
 	}

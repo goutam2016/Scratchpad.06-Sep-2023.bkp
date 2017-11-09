@@ -9,8 +9,16 @@ import org.apache.spark.api.java.JavaRDD;
 public class IncomeBandMapper implements Serializable {
 
 	private static final long serialVersionUID = 1272508542730740489L;
+	
+	private JavaRDD<String> nameVsIncomeLines;
+	private List<Integer> incomeSlabs;
 
-	Map<Band, Long> getCountPerIncomeBand(JavaRDD<String> nameVsIncomeLines, List<Integer> incomeSlabs) {
+	IncomeBandMapper(JavaRDD<String> nameVsIncomeLines, List<Integer> incomeSlabs) {
+		this.nameVsIncomeLines = nameVsIncomeLines;
+		this.incomeSlabs = incomeSlabs;
+	}
+
+	Map<Band, Long> getCountPerIncomeBand() {
 		JavaRDD<Band> incomeBands = nameVsIncomeLines.map(nameVsIncomeLine -> nameVsIncomeLine.split(","))
 				.filter(tokenizedNameVsIncomeLine -> tokenizedNameVsIncomeLine.length == 3)
 				.map(tokenizedNameVsIncomeLine -> mapToBand(tokenizedNameVsIncomeLine[2], incomeSlabs))
