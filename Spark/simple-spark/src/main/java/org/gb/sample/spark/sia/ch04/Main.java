@@ -15,6 +15,7 @@ public class Main {
 	public static void main(String[] args) {
 		try {
 			String txnFile = args[0];
+			String productListFile = args[1];
 			//String outputLocation = args[1];
 			
 			SparkConf conf = new SparkConf().setAppName("Spark-in-action chapter 4");
@@ -28,7 +29,8 @@ public class Main {
 			
 			JavaSparkContext sc = new JavaSparkContext(conf);
 			JavaRDD<String> txnLines = sc.textFile(txnFile);
-			TransactionAnalyzer txnAnalyzer = new TransactionAnalyzer(txnLines);
+			JavaRDD<String> productLines = sc.textFile(productListFile);
+			TransactionAnalyzer txnAnalyzer = new TransactionAnalyzer(txnLines, productLines);
 			Tuple2<Integer, Integer> maxTxnsTuple = txnAnalyzer.getCustIdWithMaxTxns();
 			System.out.println(maxTxnsTuple._1() + " <--> " + maxTxnsTuple._2());
 			sc.close();

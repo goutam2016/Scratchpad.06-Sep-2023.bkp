@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.List;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 
@@ -16,10 +17,12 @@ public class TransactionAnalyzer implements Serializable {
 
 	private static final long serialVersionUID = 5738463725391572356L;
 	private JavaRDD<String> txnLines;
+	private JavaRDD<String> productLines;
 
-	TransactionAnalyzer(JavaRDD<String> txnLines) {
+	TransactionAnalyzer(JavaRDD<String> txnLines, JavaRDD<String> productLines) {
 		super();
 		this.txnLines = txnLines;
+		this.productLines = productLines;
 	}
 
 	private Transaction convertToTransaction(String txnLine) {
@@ -30,14 +33,21 @@ public class TransactionAnalyzer implements Serializable {
 		Integer customerId = Integer.parseInt(txnLineTokens[2]);
 		Integer productId = Integer.parseInt(txnLineTokens[3]);
 		Integer quantity = Integer.parseInt(txnLineTokens[4]);
-		BigDecimal productPrice = new BigDecimal(txnLineTokens[5]);
+		BigDecimal aggrPrice = new BigDecimal(txnLineTokens[5]);
 		Transaction txn = new Transaction();
 		txn.setTxnDateTime(txnDateTime);
 		txn.setCustomerId(customerId);
 		txn.setProductId(productId);
 		txn.setQuantity(quantity);
-		txn.setProductPrice(productPrice);
+		txn.setAggrPrice(aggrPrice);
 		return txn;
+	}
+
+	private Product convertToProduct(String productLine) {
+		String[] productLineTokens = productLine.split("#");
+		Integer productId = Integer.parseInt(productLineTokens[0]);
+		String productName = productLineTokens[1];
+		return new Product(productId, productName);
 	}
 
 	Tuple2<Integer, Integer> getCustIdWithMaxTxns() {
@@ -50,6 +60,17 @@ public class TransactionAnalyzer implements Serializable {
 				.mapToPair(custIdTxnTuple -> new Tuple2<>(custIdTxnTuple._1(), 1))
 				.foldByKey(0, (txnCount, oneTxn) -> txnCount + oneTxn).max(txnCountComparator);
 		return maxTxnsTuple;
+	}
+
+	List<Transaction> getTxnsWithItemsAboveThreshold(String productName, int thresholdQty) {
+		JavaRDD<Product> products = productLines.map(this::convertToProduct);
+		Product product = products.filter(p -> p.getName() != null).filter(p -> p.getName().equals(productName))
+				.first();
+		JavaRDD<Transaction> txns = txnLines.map(this::convertToTransaction);
+		JavaRDD<Transaction> txnsWithItemsAboveThreshold = txns
+				.filter(t -> t.getProductId().intValue() == product.getId().intValue())
+				.filter(t -> t.getQuantity().intValue() >= thresholdQty);
+		return txnsWithItemsAboveThreshold.collect();
 	}
 
 	private class TxnCountComparator implements Comparator<Tuple2<Integer, Integer>>, Serializable {

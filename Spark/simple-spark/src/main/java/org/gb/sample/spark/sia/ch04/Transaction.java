@@ -12,36 +12,36 @@ public class Transaction implements Serializable {
 	private Integer customerId;
 	private Integer productId;
 	private Integer quantity;
-	private BigDecimal productPrice;
+	private BigDecimal aggrPrice;
 	
 	public LocalDateTime getTxnDateTime() {
 		return txnDateTime;
 	}
-	public void setTxnDateTime(LocalDateTime txnDateTime) {
+	void setTxnDateTime(LocalDateTime txnDateTime) {
 		this.txnDateTime = txnDateTime;
 	}
-	public Integer getCustomerId() {
+	Integer getCustomerId() {
 		return customerId;
 	}
-	public void setCustomerId(Integer customerId) {
+	void setCustomerId(Integer customerId) {
 		this.customerId = customerId;
 	}
-	public Integer getProductId() {
+	Integer getProductId() {
 		return productId;
 	}
-	public void setProductId(Integer productId) {
+	void setProductId(Integer productId) {
 		this.productId = productId;
 	}
-	public Integer getQuantity() {
+	Integer getQuantity() {
 		return quantity;
 	}
-	public void setQuantity(Integer quantity) {
+	void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
-	public BigDecimal getProductPrice() {
-		return productPrice;
+	BigDecimal getAggrPrice() {
+		return aggrPrice;
 	}
-	public void setProductPrice(BigDecimal productPrice) {
-		this.productPrice = productPrice;
+	void setAggrPrice(BigDecimal aggrPrice) {
+		this.aggrPrice = aggrPrice;
 	}
 }

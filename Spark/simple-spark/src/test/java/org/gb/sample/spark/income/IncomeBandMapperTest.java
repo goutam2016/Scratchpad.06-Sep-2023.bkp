@@ -11,7 +11,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class IncomeBandMapperUnitTest {
+public class IncomeBandMapperTest {
 
 	private static JavaSparkContext sparkContext;
 	private IncomeBandMapper incomeBandMapper;
