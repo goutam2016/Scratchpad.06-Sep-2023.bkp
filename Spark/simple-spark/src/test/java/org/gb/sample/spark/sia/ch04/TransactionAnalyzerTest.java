@@ -1,5 +1,6 @@
 package org.gb.sample.spark.sia.ch04;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,7 +12,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import scala.Tuple2;
 
 public class TransactionAnalyzerTest {
@@ -67,13 +67,13 @@ public class TransactionAnalyzerTest {
 		final int custId4 = 59;
 		final int qty4 = 5;
 		final int custId5 = 42;
-		final int qty5 = 10;	
+		final int qty5 = 10;
 		final int custId6 = 22;
-		final int qty6 = 9;	
+		final int qty6 = 9;
 		final int custId7 = 32;
-		final int qty7 = 8;	
+		final int qty7 = 8;
 		final int custId8 = 75;
-		final int qty8 = 10;	
+		final int qty8 = 10;
 
 		// Invoke test target
 		List<Transaction> txnsWithItemsAboveThreshold = txnAnalyzer.getTxnsWithItemsAboveThreshold(productName,
@@ -91,7 +91,7 @@ public class TransactionAnalyzerTest {
 		Assert.assertEquals(qty7, qtyPerCustId.get(custId7).intValue());
 		Assert.assertEquals(qty8, qtyPerCustId.get(custId8).intValue());
 	}
-	
+
 	@Test
 	public void getTxnsWithItemsAboveThreshold_Dictionary() {
 		// Prepare test data
@@ -110,7 +110,7 @@ public class TransactionAnalyzerTest {
 		final int custId5 = 77;
 		final int qty5 = 5;
 		final int custId6 = 47;
-		final int qty6 = 10;	
+		final int qty6 = 10;
 
 		// Invoke test target
 		List<Transaction> txnsWithItemsAboveThreshold = txnAnalyzer.getTxnsWithItemsAboveThreshold(productName,
@@ -127,4 +127,19 @@ public class TransactionAnalyzerTest {
 		Assert.assertEquals(qty6, qtyPerCustId.get(custId6).intValue());
 	}
 
+	@Test
+	public void getCustIdWithMostSpent() {
+		// Prepare test data
+
+		// Setup expectations
+		final int custIdWithMostSpent = 76;
+		final BigDecimal totalPrice = BigDecimal.valueOf(100049.00);
+
+		// Invoke test target
+		Tuple2<Integer, BigDecimal> mostSpentTuple = txnAnalyzer.getCustIdWithMostSpent();
+
+		// Verify results
+		Assert.assertEquals(custIdWithMostSpent, mostSpentTuple._1().intValue());
+		Assert.assertEquals(totalPrice.compareTo(mostSpentTuple._2()), 0);
+	}
 }

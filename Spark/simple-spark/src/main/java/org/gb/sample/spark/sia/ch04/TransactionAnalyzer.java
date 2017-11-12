@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 
@@ -73,6 +74,17 @@ public class TransactionAnalyzer implements Serializable {
 		return txnsWithItemsAboveThreshold.collect();
 	}
 
+	Tuple2<Integer, BigDecimal> getCustIdWithMostSpent() {
+		JavaRDD<Transaction> txns = txnLines.map(this::convertToTransaction);
+		JavaPairRDD<Integer, BigDecimal> custIdTxnPricePairs = txns
+				.mapToPair(txn -> new Tuple2<>(txn.getCustomerId(), txn.getAggrPrice()));
+		JavaPairRDD<Integer, BigDecimal> custIdTotalPricePairs = custIdTxnPricePairs
+				.reduceByKey((totalPrice, txnPrice) -> totalPrice.add(txnPrice));
+
+		Comparator<Tuple2<Integer, BigDecimal>> priceComparator = new PriceComparator();
+		return custIdTotalPricePairs.max(priceComparator);
+	}
+
 	private class TxnCountComparator implements Comparator<Tuple2<Integer, Integer>>, Serializable {
 
 		private static final long serialVersionUID = 8599281137629438124L;
@@ -83,4 +95,13 @@ public class TransactionAnalyzer implements Serializable {
 		}
 	}
 
+	public class PriceComparator implements Comparator<Tuple2<Integer, BigDecimal>>, Serializable {
+
+		private static final long serialVersionUID = 1654363779263606021L;
+
+		@Override
+		public int compare(Tuple2<Integer, BigDecimal> custIdVsPrice1, Tuple2<Integer, BigDecimal> custIdVsPrice2) {
+			return custIdVsPrice1._2().compareTo(custIdVsPrice2._2());
+		}
+	}
 }
