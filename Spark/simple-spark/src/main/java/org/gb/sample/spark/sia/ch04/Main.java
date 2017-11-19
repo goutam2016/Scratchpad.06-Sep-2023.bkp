@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import scala.Tuple2;
 
 public class Main {
 	
@@ -16,24 +15,24 @@ public class Main {
 		try {
 			String txnFile = args[0];
 			String productListFile = args[1];
-			//String outputLocation = args[1];
+			String outputLocation = args[2];
 			
 			SparkConf conf = new SparkConf().setAppName("Spark-in-action chapter 4");
 			String master = conf.get("spark.master");
 			
-			/*if(master.startsWith("local")) {
+			if(master.startsWith("local")) {
 				cleanOutputLocation(outputLocation);
 			} else if (master.startsWith("spark")) {
 				cleanOutputLocation(outputLocation);
-			}*/
+			}
 			
-			JavaSparkContext sc = new JavaSparkContext(conf);
-			JavaRDD<String> txnLines = sc.textFile(txnFile);
-			JavaRDD<String> productLines = sc.textFile(productListFile);
-			TransactionAnalyzer txnAnalyzer = new TransactionAnalyzer(txnLines, productLines);
-			Tuple2<Integer, Integer> maxTxnsTuple = txnAnalyzer.getCustIdWithMaxTxns();
-			System.out.println(maxTxnsTuple._1() + " <--> " + maxTxnsTuple._2());
-			sc.close();
+			JavaSparkContext sparkContext = new JavaSparkContext(conf);
+			JavaRDD<String> txnLines = sparkContext.textFile(txnFile);
+			JavaRDD<String> productLines = sparkContext.textFile(productListFile);
+			RewardCalculator rewardCalculator = new RewardCalculator(txnLines, productLines);
+			JavaRDD<Transaction> rewards = sparkContext.parallelize(rewardCalculator.calculateRewards());
+			rewards.saveAsTextFile(outputLocation);
+			sparkContext.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

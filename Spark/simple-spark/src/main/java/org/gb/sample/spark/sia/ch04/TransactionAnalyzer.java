@@ -2,10 +2,6 @@ package org.gb.sample.spark.sia.ch04;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 
@@ -17,43 +13,17 @@ import scala.Tuple2;
 public class TransactionAnalyzer implements Serializable {
 
 	private static final long serialVersionUID = 5738463725391572356L;
-	private JavaRDD<String> txnLines;
-	private JavaRDD<String> productLines;
+	private JavaRDD<Transaction> transactions;
+	private JavaRDD<Product> products;
 
-	TransactionAnalyzer(JavaRDD<String> txnLines, JavaRDD<String> productLines) {
+	TransactionAnalyzer(JavaRDD<Transaction> transactions, JavaRDD<Product> products) {
 		super();
-		this.txnLines = txnLines;
-		this.productLines = productLines;
-	}
-
-	private Transaction convertToTransaction(String txnLine) {
-		String[] txnLineTokens = txnLine.split("#");
-		LocalDate txnDate = LocalDate.parse(txnLineTokens[0], DateTimeFormatter.ISO_DATE);
-		LocalTime txnTime = LocalTime.parse(txnLineTokens[1], DateTimeFormatter.ofPattern("h:mm a"));
-		LocalDateTime txnDateTime = LocalDateTime.of(txnDate, txnTime);
-		Integer customerId = Integer.parseInt(txnLineTokens[2]);
-		Integer productId = Integer.parseInt(txnLineTokens[3]);
-		Integer quantity = Integer.parseInt(txnLineTokens[4]);
-		BigDecimal aggrPrice = new BigDecimal(txnLineTokens[5]);
-		Transaction txn = new Transaction();
-		txn.setTxnDateTime(txnDateTime);
-		txn.setCustomerId(customerId);
-		txn.setProductId(productId);
-		txn.setQuantity(quantity);
-		txn.setAggrPrice(aggrPrice);
-		return txn;
-	}
-
-	private Product convertToProduct(String productLine) {
-		String[] productLineTokens = productLine.split("#");
-		Integer productId = Integer.parseInt(productLineTokens[0]);
-		String productName = productLineTokens[1];
-		return new Product(productId, productName);
+		this.transactions = transactions;
+		this.products = products;
 	}
 
 	Tuple2<Integer, Integer> getCustIdWithMaxTxns() {
-		JavaRDD<Transaction> txns = txnLines.map(this::convertToTransaction);
-		JavaPairRDD<Integer, Transaction> custIdTxnPairs = txns
+		JavaPairRDD<Integer, Transaction> custIdTxnPairs = transactions
 				.mapToPair(txn -> new Tuple2<>(txn.getCustomerId(), txn));
 
 		Comparator<Tuple2<Integer, Integer>> txnCountComparator = new TxnCountComparator();
@@ -64,19 +34,16 @@ public class TransactionAnalyzer implements Serializable {
 	}
 
 	List<Transaction> getTxnsWithItemsAboveThreshold(String productName, int thresholdQty) {
-		JavaRDD<Product> products = productLines.map(this::convertToProduct);
 		Product product = products.filter(p -> p.getName() != null).filter(p -> p.getName().equals(productName))
 				.first();
-		JavaRDD<Transaction> txns = txnLines.map(this::convertToTransaction);
-		JavaRDD<Transaction> txnsWithItemsAboveThreshold = txns
+		JavaRDD<Transaction> txnsWithItemsAboveThreshold = transactions
 				.filter(t -> t.getProductId().intValue() == product.getId().intValue())
 				.filter(t -> t.getQuantity().intValue() >= thresholdQty);
 		return txnsWithItemsAboveThreshold.collect();
 	}
 
 	Tuple2<Integer, BigDecimal> getCustIdWithMostSpent() {
-		JavaRDD<Transaction> txns = txnLines.map(this::convertToTransaction);
-		JavaPairRDD<Integer, BigDecimal> custIdTxnPricePairs = txns
+		JavaPairRDD<Integer, BigDecimal> custIdTxnPricePairs = transactions
 				.mapToPair(txn -> new Tuple2<>(txn.getCustomerId(), txn.getAggrPrice()));
 		JavaPairRDD<Integer, BigDecimal> custIdTotalPricePairs = custIdTxnPricePairs
 				.reduceByKey((totalPrice, txnPrice) -> totalPrice.add(txnPrice));
@@ -95,7 +62,7 @@ public class TransactionAnalyzer implements Serializable {
 		}
 	}
 
-	public class PriceComparator implements Comparator<Tuple2<Integer, BigDecimal>>, Serializable {
+	private class PriceComparator implements Comparator<Tuple2<Integer, BigDecimal>>, Serializable {
 
 		private static final long serialVersionUID = 1654363779263606021L;
 

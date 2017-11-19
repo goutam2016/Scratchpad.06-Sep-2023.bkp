@@ -1,1 +1,2 @@
+./splitAndSend.sh input/ local
 spark-submit --class org.gb.sample.spark.streaming.sia.ch06.Main --master local target/simple-streaming-0.0.1-SNAPSHOT.jar data/sia/ch06/input/

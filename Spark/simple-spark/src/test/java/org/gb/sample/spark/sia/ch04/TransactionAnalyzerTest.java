@@ -19,6 +19,7 @@ public class TransactionAnalyzerTest {
 	private static final String TXN_FILE = "data/sia/ch04/transactions.txt";
 	private static final String PRODUCT_LIST_FILE = "data/sia/ch04/products.txt";
 	private static JavaSparkContext sparkContext;
+	private static Converter converter;
 	private static TransactionAnalyzer txnAnalyzer;
 
 	@BeforeClass
@@ -27,7 +28,10 @@ public class TransactionAnalyzerTest {
 		sparkContext = new JavaSparkContext(conf);
 		JavaRDD<String> txnLines = sparkContext.textFile(TXN_FILE);
 		JavaRDD<String> productLines = sparkContext.textFile(PRODUCT_LIST_FILE);
-		txnAnalyzer = new TransactionAnalyzer(txnLines, productLines);
+		converter = Converter.getInstance();
+		JavaRDD<Transaction> transactions = txnLines.map(converter::convertToTransaction);
+		JavaRDD<Product> products = productLines.map(converter::convertToProduct);
+		txnAnalyzer = new TransactionAnalyzer(transactions, products);
 	}
 
 	@AfterClass
@@ -55,7 +59,7 @@ public class TransactionAnalyzerTest {
 	public void getTxnsWithItemsAboveThreshold_BarbiePlayset() {
 		// Prepare test data
 		final String productName = "Barbie Shopping Mall Playset";
-		final int thresholdQty = 5;
+		final int thresholdQty = 2;
 
 		// Setup expectations
 		final int custId1 = 17;

@@ -4,7 +4,7 @@
 	%SPARK_HOME%\bin\spark-submit --class org.gb.sample.spark.ContextInfoMain --master local simple-spark/target/simple-spark-0.0.1-SNAPSHOT.jar
 3.	%SPARK_HOME%\bin\spark-submit --class org.gb.sample.spark.wordcount.Main --master local simple-spark/target/simple-spark-0.0.1-SNAPSHOT.jar simple-spark/data/wordcount/poem.txt
 4.	%SPARK_HOME%\bin\spark-submit --class org.gb.sample.spark.temperature.Main simple-spark/target/simple-spark-0.0.1-SNAPSHOT.jar simple-spark/data/temperature/max-min-temp-by-year.txt
-5.	%SPARK_HOME%\bin\spark-submit --class org.gb.sample.spark.sia.ch04.Main --master local simple-spark/target/simple-spark-0.0.1-SNAPSHOT.jar simple-spark/data/sia/ch04/transactions.txt simple-spark/data/sia/ch04/output
+5.	%SPARK_HOME%\bin\spark-submit --class org.gb.sample.spark.sia.ch04.Main --master local simple-spark/target/simple-spark-0.0.1-SNAPSHOT.jar simple-spark/data/sia/ch04/transactions.txt simple-spark/data/sia/ch04/products.txt simple-spark/data/sia/ch04/output
 6.	Using Spark Standalone Cluster
 	%SPARK_HOME%\sbin\start-master.sh
 	%SPARK_HOME%\sbin\start-slave.sh spark://localhost:7077
