@@ -3,8 +3,11 @@ package org.gb.sample.spark.streaming.sia.ch06;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.Optional;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
@@ -24,18 +27,44 @@ public class Main {
 			String inputDir = args[0];
 			SparkConf sparkConf = new SparkConf().setAppName("Stock Orders Dashboard");
 			JavaStreamingContext streamingContext = new JavaStreamingContext(sparkConf, Durations.seconds(5));
-
+			streamingContext.checkpoint("/tmp");
 			JavaDStream<String> orderLines = streamingContext.textFileStream(inputDir);
-			JavaPairDStream<Order.Direction, Integer> countPerDirection = orderLines.map(Main::convertToOrder)
-					.mapToPair(order -> new Tuple2<>(order.getDirection(), 1)).reduceByKey(Integer::sum);
-			countPerDirection.print();
-
+			/*
+			 * JavaPairDStream<Order.Direction, Integer> countPerDirection = orderLines.map(Main::convertToOrder)
+			 * .mapToPair(order -> new Tuple2<>(order.getDirection(), 1)).reduceByKey(Integer::sum);
+			 * countPerDirection.print();
+			 */
+			JavaPairDStream<Integer, BigDecimal> clientIdVsOrderAmountPairs = orderLines.map(Main::convertToOrder)
+					.mapToPair(order -> new Tuple2<>(order.getClientId(),
+							order.getPrice().multiply(BigDecimal.valueOf(order.getQuantity().intValue()))));
+			JavaPairDStream<Integer, BigDecimal> topCumulativeTotalAmounts = clientIdVsOrderAmountPairs
+					.updateStateByKey(Main::updateCumulativeTotalAmount)
+					.mapToPair(clientIdVsCumulTotalAmtTuple -> new Tuple2<>(clientIdVsCumulTotalAmtTuple._2(),
+							clientIdVsCumulTotalAmtTuple._1()))
+					.transformToPair(cumulTotalAmtVsClientId -> selectTopCumulativeTotalAmount(cumulTotalAmtVsClientId, 5))
+					.mapToPair(cumulTotalAmtVsClientIdTuple -> new Tuple2<>(cumulTotalAmtVsClientIdTuple._2(),
+							cumulTotalAmtVsClientIdTuple._1()));
+			topCumulativeTotalAmounts.print();
 			streamingContext.start();
 			streamingContext.awaitTermination();
 			streamingContext.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static Optional<BigDecimal> updateCumulativeTotalAmount(List<BigDecimal> newOrderAmounts,
+			Optional<BigDecimal> cumulativeTotalAmt) {
+		BigDecimal additionalGrossAmount = newOrderAmounts.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+		BigDecimal updatedTotalAmt = cumulativeTotalAmt.orElse(BigDecimal.ZERO).add(additionalGrossAmount);
+		return Optional.of(updatedTotalAmt);
+	}
+
+	private static JavaPairRDD<BigDecimal, Integer> selectTopCumulativeTotalAmount(
+			JavaPairRDD<BigDecimal, Integer> cumulTotalAmtVsClientId, int recordsFromTop) {
+		return cumulTotalAmtVsClientId.sortByKey(false).zipWithIndex()
+				.filter(cumulTotalAmtVsClientIdVsIdx -> cumulTotalAmtVsClientIdVsIdx._2().intValue() <= recordsFromTop)
+				.mapToPair(cumulTotalAmtVsClientIdVsIdx -> cumulTotalAmtVsClientIdVsIdx._1());
 	}
 
 	private static Order convertToOrder(String orderLine) {

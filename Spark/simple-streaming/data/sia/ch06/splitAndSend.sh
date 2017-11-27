@@ -5,7 +5,12 @@ if [ -z "$1" ]; then
         exit 1
 fi
 
-# split -l 10000 --additional-suffix=.ordtmp orders.txt orders
+rm -rf $1
+for f in `ls order-chunk*`; do
+	rm $f
+done
+mkdir $1
+
 split -l 10000 orders.txt order-chunk
 
 for f in `ls order-chunk*`; do
