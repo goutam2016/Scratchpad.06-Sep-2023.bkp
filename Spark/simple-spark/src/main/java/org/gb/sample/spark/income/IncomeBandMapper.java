@@ -21,18 +21,18 @@ public class IncomeBandMapper implements Serializable {
 	Map<Band, Long> getCountPerIncomeBand() {
 		JavaRDD<Band> incomeBands = nameVsIncomeLines.map(nameVsIncomeLine -> nameVsIncomeLine.split(","))
 				.filter(tokenizedNameVsIncomeLine -> tokenizedNameVsIncomeLine.length == 3)
-				.map(tokenizedNameVsIncomeLine -> mapToBand(tokenizedNameVsIncomeLine[2], incomeSlabs))
+				.map(tokenizedNameVsIncomeLine -> tokenizedNameVsIncomeLine[2]).map(this::mapToBand)
 				.filter(band -> band != null);
 		int noOfPartitions = incomeBands.rdd().getNumPartitions();
 		System.out.printf("No. of partitions: %d.\n", noOfPartitions);
 		Map<Band, Long> countPerIncomeBand = nameVsIncomeLines.map(nameVsIncomeLine -> nameVsIncomeLine.split(","))
 				.filter(tokenizedNameVsIncomeLine -> tokenizedNameVsIncomeLine.length == 3)
-				.map(tokenizedNameVsIncomeLine -> mapToBand(tokenizedNameVsIncomeLine[2], incomeSlabs))
+				.map(tokenizedNameVsIncomeLine -> tokenizedNameVsIncomeLine[2]).map(this::mapToBand)
 				.filter(band -> band != null).countByValue();
 		return countPerIncomeBand;
 	}
 
-	private Band mapToBand(String incomeStr, List<Integer> incomeSlabs) {
+	private Band mapToBand(String incomeStr) {
 		Integer income = null;
 		try {
 			income = Integer.parseInt(incomeStr);
