@@ -40,23 +40,6 @@ public class TripAnalyzer implements Serializable {
 		return tripsBtwnPickupDropoffTimes.collect();
 	}
 
-	double computeAvgTipAsPercentageOfFare_bkp() {
-		Tuple2<Integer, Double> initialTripCountVsTipRatio = new Tuple2<Integer, Double>(0, 0.0);
-		Function2<Tuple2<Integer, Double>, Double, Tuple2<Integer, Double>> tipRatioAdder = (tripCountVsTipRatio,
-				nextTipRatio) -> new Tuple2<Integer, Double>(tripCountVsTipRatio._1().intValue() + 1,
-						tripCountVsTipRatio._2().doubleValue() + nextTipRatio.doubleValue());
-		Function2<Tuple2<Integer, Double>, Tuple2<Integer, Double>, Tuple2<Integer, Double>> tripCountVsTipRatioCombiner = (
-				tripCountVsTipRatio1, tripCountVsTipRatio2) -> new Tuple2<Integer, Double>(
-						tripCountVsTipRatio1._1().intValue() + tripCountVsTipRatio2._1().intValue(),
-						tripCountVsTipRatio1._2().doubleValue() + tripCountVsTipRatio2._2().doubleValue());
-		Tuple2<Integer, Double> combinedTripCountVsTipRatio = taxiTrips
-				.filter(trip -> trip.getFareAmount().signum() == 1)
-				.map(trip -> trip.getTipAmount().doubleValue() / trip.getFareAmount().doubleValue())
-				.aggregate(initialTripCountVsTipRatio, tipRatioAdder, tripCountVsTipRatioCombiner);
-
-		return (combinedTripCountVsTipRatio._2().doubleValue() / combinedTripCountVsTipRatio._1().intValue()) * 100;
-	}
-
 	double computeAvgTipAsPercentageOfFare() {
 		Tuple2<Integer, BigDecimal> initialTripCountVsTipRatio = new Tuple2<>(0, BigDecimal.ZERO);
 		Function2<Tuple2<Integer, BigDecimal>, BigDecimal, Tuple2<Integer, BigDecimal>> tipRatioAdder = (
