@@ -18,7 +18,7 @@ import scala.Tuple2;
 public class TripAnalyzer implements Serializable {
 
 	private static final long serialVersionUID = -3531081469539195154L;
-	
+
 	private Converter converter;
 	private JavaRDD<TaxiTrip> taxiTrips;
 
@@ -31,6 +31,12 @@ public class TripAnalyzer implements Serializable {
 		JavaRDD<TaxiTrip> tripsWithPsngrsAboveTshld = taxiTrips.filter(Objects::nonNull)
 				.filter(trip -> trip.getPassengerCount().intValue() >= tshldPsngrCnt);
 		return tripsWithPsngrsAboveTshld.collect();
+	}
+
+	Map<Integer, Integer> getTripCountPerPsngrCount() {
+		JavaPairRDD<Integer, Integer> tripCountPerPsngrCount = taxiTrips.filter(Objects::nonNull)
+				.mapToPair(trip -> new Tuple2<>(trip.getPassengerCount(), 1)).reduceByKey(Integer::sum);
+		return tripCountPerPsngrCount.collectAsMap();
 	}
 
 	List<TaxiTrip> getTripsBetweenPickupDropoffTimes(LocalTime earliestPickupTime, LocalTime latestDropoffTime) {
@@ -58,26 +64,25 @@ public class TripAnalyzer implements Serializable {
 				.divide(BigDecimal.valueOf(combinedTripCountVsTipRatio._1().intValue()), 4, RoundingMode.HALF_UP);
 		return avgTipRatio.multiply(BigDecimal.valueOf(100)).doubleValue();
 	}
-	
+
 	/**
-	 * Define 4 time bands. Start of time band inclusive, end of time band exclusive.
-	 * 06:00(inclusive) - 12:00(exclusive)
-	 * 12:00 - 18:00
-	 * 18:00 - 00:00
-	 * 00:00 - 06:00
+	 * Define 4 time bands. Start of time band inclusive, end of time band
+	 * exclusive. 06:00(inclusive) - 12:00(exclusive) 12:00 - 18:00 18:00 -
+	 * 00:00 00:00 - 06:00
 	 * 
-	 * Segregate taxi trips between these 4 time bands according to their pickup times.
-	 * For each band, find the following statistics:
-	 * Total no. of trips
-	 * Total passenger count and average passenger count per trip. 
-	 * Total distance covered and average distance per trip.
-	 * Total fare amount and average fare amount per trip.
+	 * Segregate taxi trips between these 4 time bands according to their pickup
+	 * times. For each band, find the following statistics: Total no. of trips
+	 * Total passenger count and average passenger count per trip. Total
+	 * distance covered and average distance per trip. Total fare amount and
+	 * average fare amount per trip.
 	 */
 	Map<TimeBand, TripStats> getTripStatsPerTimeBand(List<TimeBand> timeBands) {
 		String jvmName = ManagementFactory.getRuntimeMXBean().getName();
 		String threadName = Thread.currentThread().getName();
 		long threadId = Thread.currentThread().getId();
-		System.out.printf("TripAnalyzer.getTripStatsPerTimeBand() called from jvm: %s, thread-name: %s, thread-id: %d.\n", jvmName, threadName, threadId);
+		System.out.printf(
+				"TripAnalyzer.getTripStatsPerTimeBand() called from jvm: %s, thread-name: %s, thread-id: %d.\n",
+				jvmName, threadName, threadId);
 		JavaPairRDD<TimeBand, TripStats> tripStatsPerTimeBand = taxiTrips
 				.mapToPair(trip -> new Tuple2<>(mapToTimeBand(trip, timeBands), trip))
 				.combineByKey(this::createTripStats, this::mergeTripStats, this::combineTripStats);
@@ -88,7 +93,8 @@ public class TripAnalyzer implements Serializable {
 		String jvmName = ManagementFactory.getRuntimeMXBean().getName();
 		String threadName = Thread.currentThread().getName();
 		long threadId = Thread.currentThread().getId();
-		System.out.printf("TripAnalyzer.createTripStats() called from jvm: %s, thread-name: %s, thread-id: %d.\n", jvmName, threadName, threadId);
+		System.out.printf("TripAnalyzer.createTripStats() called from jvm: %s, thread-name: %s, thread-id: %d.\n",
+				jvmName, threadName, threadId);
 		TripStats stats = new TripStats();
 		stats.setTotalTripCount(1);
 		stats.setTotalPassengerCount(trip.getPassengerCount());
@@ -101,7 +107,8 @@ public class TripAnalyzer implements Serializable {
 		String jvmName = ManagementFactory.getRuntimeMXBean().getName();
 		String threadName = Thread.currentThread().getName();
 		long threadId = Thread.currentThread().getId();
-		System.out.printf("TripAnalyzer.mergeTripStats() called from jvm: %s, thread-name: %s, thread-id: %d.\n", jvmName, threadName, threadId);
+		System.out.printf("TripAnalyzer.mergeTripStats() called from jvm: %s, thread-name: %s, thread-id: %d.\n",
+				jvmName, threadName, threadId);
 		Integer totalTripCount = stats.getTotalTripCount().intValue() + 1;
 		Integer totalPassengerCount = stats.getTotalPassengerCount().intValue()
 				+ nextTrip.getPassengerCount().intValue();
@@ -119,7 +126,8 @@ public class TripAnalyzer implements Serializable {
 		String jvmName = ManagementFactory.getRuntimeMXBean().getName();
 		String threadName = Thread.currentThread().getName();
 		long threadId = Thread.currentThread().getId();
-		System.out.printf("TripAnalyzer.combineTripStats() called from jvm: %s, thread-name: %s, thread-id: %d.\n", jvmName, threadName, threadId);
+		System.out.printf("TripAnalyzer.combineTripStats() called from jvm: %s, thread-name: %s, thread-id: %d.\n",
+				jvmName, threadName, threadId);
 		Integer totalTripCount = stats1.getTotalTripCount().intValue() + stats2.getTotalTripCount().intValue();
 		Integer totalPassengerCount = stats1.getTotalPassengerCount().intValue()
 				+ stats2.getTotalPassengerCount().intValue();
@@ -137,7 +145,8 @@ public class TripAnalyzer implements Serializable {
 		String jvmName = ManagementFactory.getRuntimeMXBean().getName();
 		String threadName = Thread.currentThread().getName();
 		long threadId = Thread.currentThread().getId();
-		System.out.printf("TripAnalyzer.mapToTimeBand() called from jvm: %s, thread-name: %s, thread-id: %d.\n", jvmName, threadName, threadId);
+		System.out.printf("TripAnalyzer.mapToTimeBand() called from jvm: %s, thread-name: %s, thread-id: %d.\n",
+				jvmName, threadName, threadId);
 		LocalTime pickupTime = taxiTrip.getPickupDateTime().toLocalTime();
 		TimeBand selectedTimeBand = null;
 

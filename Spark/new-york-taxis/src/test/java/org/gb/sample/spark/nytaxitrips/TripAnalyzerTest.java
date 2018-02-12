@@ -15,7 +15,7 @@ import org.junit.Test;
 
 public class TripAnalyzerTest {
 
-	private static final String TAXI_TRIP_FILE = "data/nytaxitrips/yellow_tripdata_1000.csv";
+	private static final String TAXI_TRIP_FILE = "test-data/yellow_tripdata_1000.csv";
 	//private static final String TAXI_TRIP_FILE = "data/nytaxitrips/bkp.txt";
 	private static JavaSparkContext sparkContext;
 	private static TripAnalyzer tripAnalyzer;
@@ -46,6 +46,36 @@ public class TripAnalyzerTest {
 
 		// Verify results
 		Assert.assertEquals(exptdTripCount, tripsWithPsngrsAboveTshld.size());
+	}
+	
+	@Test
+	public void getTripCountPerPsngrCount() {
+		// Prepare test data
+		
+		// Setup expectations
+		final Integer psngrCnt1 = 2;
+		final Integer tripCnt1 = 113;
+		final Integer psngrCnt2 = 5;
+		final Integer tripCnt2 = 59;
+		final Integer psngrCnt3 = 4;
+		final Integer tripCnt3 = 18;
+		final Integer psngrCnt4 = 1;
+		final Integer tripCnt4 = 738;
+		final Integer psngrCnt5 = 3;
+		final Integer tripCnt5 = 33;
+		final Integer psngrCnt6 = 6;
+		final Integer tripCnt6 = 39;
+		
+		// Invoke test target
+		Map<Integer, Integer> tripCountPerPsngrCount = tripAnalyzer.getTripCountPerPsngrCount();
+		
+		// Verify results
+		Assert.assertEquals(tripCnt1.intValue(), tripCountPerPsngrCount.get(psngrCnt1).intValue());
+		Assert.assertEquals(tripCnt2.intValue(), tripCountPerPsngrCount.get(psngrCnt2).intValue());
+		Assert.assertEquals(tripCnt3.intValue(), tripCountPerPsngrCount.get(psngrCnt3).intValue());
+		Assert.assertEquals(tripCnt4.intValue(), tripCountPerPsngrCount.get(psngrCnt4).intValue());
+		Assert.assertEquals(tripCnt5.intValue(), tripCountPerPsngrCount.get(psngrCnt5).intValue());
+		Assert.assertEquals(tripCnt6.intValue(), tripCountPerPsngrCount.get(psngrCnt6).intValue());
 	}
 
 	@Test

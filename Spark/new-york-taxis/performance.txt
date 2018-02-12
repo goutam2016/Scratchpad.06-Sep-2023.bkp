@@ -1,0 +1,16 @@
+New York Yellow Taxi trips - trip statistics per time band
+==================================================================
+Environment:				Mac OS, 16 GB RAM
+Input records: 				10906859
+---------------------------------------------------------
+CPU Cores per executor: 	1
+Memory per executor:		512m		1g		2g			
+Avg. time to finish:		31s			32s		31s
+---------------------------------------------------------
+CPU Cores per executor: 	4
+Memory per executor:		512m		1g		2g
+Avg. time to finish:		22s			22s		22s
+---------------------------------------------------------
+CPU Cores per executor: 	8
+Memory per executor:		512m		1g		2g		4g
+Avg. time to finish:		20s			20s		20s		20s
