@@ -1,7 +1,6 @@
 package org.gb.sample.spark.nytaxitrips;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -35,10 +34,10 @@ public class TripStatsPerTimeBandMain {
 
 	private static void printTripStatsPerTimeBand(TimeBand timeBand, TripStats tripStats) {
 		Integer totalTripCount = tripStats.getTotalTripCount();
-		Double avgPassengersPerTrip = tripStats.getTotalPassengerCount().doubleValue() / totalTripCount.intValue();
-		Double avgDistancePerTrip = tripStats.getTotalDistanceCovered().doubleValue() / totalTripCount.intValue();
-		BigDecimal avgFarePerTrip = tripStats.getTotalFareAmount().divide(BigDecimal.valueOf(totalTripCount.intValue()),
-				2, RoundingMode.HALF_UP);
+		Double avgPassengersPerTrip = tripStats.getAvgPassengersPerTrip();
+		Double avgDistancePerTrip = tripStats.getAvgDistancePerTrip();
+		BigDecimal avgFarePerTrip = tripStats.getAvgFarePerTrip();
+
 		System.out.printf(
 				"%s --> total trips: %d, total passengers: %d, avg. passengers per trip: %6.2f, "
 						+ "total distance: %6.2f, avg. distance per trip: %6.2f, total fare: %s, avg. fare per trip: %s.\n",

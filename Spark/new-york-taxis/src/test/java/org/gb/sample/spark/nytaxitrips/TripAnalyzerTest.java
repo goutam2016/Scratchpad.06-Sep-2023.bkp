@@ -1,6 +1,7 @@
 package org.gb.sample.spark.nytaxitrips;
 
 import java.time.LocalTime;
+import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,14 @@ public class TripAnalyzerTest {
 		Assert.assertEquals(tripCnt4.intValue(), tripCountPerPsngrCount.get(psngrCnt4).intValue());
 		Assert.assertEquals(tripCnt5.intValue(), tripCountPerPsngrCount.get(psngrCnt5).intValue());
 		Assert.assertEquals(tripCnt6.intValue(), tripCountPerPsngrCount.get(psngrCnt6).intValue());
+	}
+	
+	@Test
+	public void getAvgPsngrCountPerMonth() {
+		// Invoke test target
+		Map<Month, Double> avgPsngrCountPerMonth = tripAnalyzer.getAvgPsngrCountPerMonth();
+		
+		avgPsngrCountPerMonth.forEach((month, avgPsngrCnt) -> System.out.println(month + " --> " + avgPsngrCnt));
 	}
 
 	@Test

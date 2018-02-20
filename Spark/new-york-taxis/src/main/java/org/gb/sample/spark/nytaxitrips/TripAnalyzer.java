@@ -5,6 +5,7 @@ import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,6 +40,24 @@ public class TripAnalyzer implements Serializable {
 		return tripCountPerPsngrCount.collectAsMap();
 	}
 
+	Map<Month, Double> getAvgPsngrCountPerMonth() {
+		Tuple2<Integer, Integer> initialTripCntVsPsngrCnt = new Tuple2<Integer, Integer>(0, 0);
+		Function2<Tuple2<Integer, Integer>, Integer, Tuple2<Integer, Integer>> tripCntVsPsngrCntAdder = (
+				tripCntVsPsngrCnt, nextPsngrCnt) -> new Tuple2<>(tripCntVsPsngrCnt._1().intValue() + 1,
+						tripCntVsPsngrCnt._2().intValue() + nextPsngrCnt.intValue());
+		Function2<Tuple2<Integer, Integer>, Tuple2<Integer, Integer>, Tuple2<Integer, Integer>> tripCntVsPsngrCntCombiner = (
+				tripCntVsPsngrCnt1, tripCntVsPsngrCnt2) -> new Tuple2<>(
+						tripCntVsPsngrCnt1._1().intValue() + tripCntVsPsngrCnt2._1().intValue(),
+						tripCntVsPsngrCnt1._2().intValue() + tripCntVsPsngrCnt2._2().intValue());
+		JavaPairRDD<Month, Double> avgPsngrCountPerMonth = taxiTrips.filter(Objects::nonNull)
+				.mapToPair(trip -> new Tuple2<>(trip.getPickupDateTime().getMonth(), trip.getPassengerCount()))
+				.aggregateByKey(initialTripCntVsPsngrCnt, tripCntVsPsngrCntAdder, tripCntVsPsngrCntCombiner)
+				.mapValues(monthlyTripCntVsPsngrCnt -> monthlyTripCntVsPsngrCnt._2().doubleValue()
+						/ monthlyTripCntVsPsngrCnt._1().intValue());
+
+		return avgPsngrCountPerMonth.collectAsMap();
+	}
+
 	List<TaxiTrip> getTripsBetweenPickupDropoffTimes(LocalTime earliestPickupTime, LocalTime latestDropoffTime) {
 		JavaRDD<TaxiTrip> tripsBtwnPickupDropoffTimes = taxiTrips.filter(Objects::nonNull)
 				.filter(trip -> trip.getPickupDateTime().toLocalTime().isAfter(earliestPickupTime))
@@ -66,15 +85,12 @@ public class TripAnalyzer implements Serializable {
 	}
 
 	/**
-	 * Define 4 time bands. Start of time band inclusive, end of time band
-	 * exclusive. 06:00(inclusive) - 12:00(exclusive) 12:00 - 18:00 18:00 -
-	 * 00:00 00:00 - 06:00
+	 * Define 4 time bands. Start of time band inclusive, end of time band exclusive. 06:00(inclusive) -
+	 * 12:00(exclusive) 12:00 - 18:00 18:00 - 00:00 00:00 - 06:00
 	 * 
-	 * Segregate taxi trips between these 4 time bands according to their pickup
-	 * times. For each band, find the following statistics: Total no. of trips
-	 * Total passenger count and average passenger count per trip. Total
-	 * distance covered and average distance per trip. Total fare amount and
-	 * average fare amount per trip.
+	 * Segregate taxi trips between these 4 time bands according to their pickup times. For each band, find the
+	 * following statistics: Total no. of trips Total passenger count and average passenger count per trip. Total
+	 * distance covered and average distance per trip. Total fare amount and average fare amount per trip.
 	 */
 	Map<TimeBand, TripStats> getTripStatsPerTimeBand(List<TimeBand> timeBands) {
 		String jvmName = ManagementFactory.getRuntimeMXBean().getName();
@@ -85,8 +101,22 @@ public class TripAnalyzer implements Serializable {
 				jvmName, threadName, threadId);
 		JavaPairRDD<TimeBand, TripStats> tripStatsPerTimeBand = taxiTrips
 				.mapToPair(trip -> new Tuple2<>(mapToTimeBand(trip, timeBands), trip))
-				.combineByKey(this::createTripStats, this::mergeTripStats, this::combineTripStats);
+				.combineByKey(this::createTripStats, this::mergeTripStats, this::combineTripStats)
+				.mapValues(this::setAvgStats);
 		return tripStatsPerTimeBand.collectAsMap();
+	}
+
+	private TripStats setAvgStats(TripStats tripStats) {
+		Double avgPassengersPerTrip = tripStats.getTotalPassengerCount().doubleValue()
+				/ tripStats.getTotalTripCount().intValue();
+		Double avgDistancePerTrip = tripStats.getTotalDistanceCovered().doubleValue()
+				/ tripStats.getTotalTripCount().intValue();
+		BigDecimal avgFarePerTrip = tripStats.getTotalFareAmount()
+				.divide(BigDecimal.valueOf(tripStats.getTotalTripCount().intValue()), 4, RoundingMode.HALF_UP);
+		tripStats.setAvgPassengersPerTrip(avgPassengersPerTrip);
+		tripStats.setAvgDistancePerTrip(avgDistancePerTrip);
+		tripStats.setAvgFarePerTrip(avgFarePerTrip);
+		return tripStats;
 	}
 
 	private TripStats createTripStats(TaxiTrip trip) {
