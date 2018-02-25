@@ -16,9 +16,8 @@ public class TripStatsPerTimeBandMain {
 		SparkConf conf = new SparkConf().setAppName("New York Yellow Taxi trips - trip statistics per time band");
 		JavaSparkContext sparkContext = new JavaSparkContext(conf);
 		sparkContext.sc().addSparkListener(new TripAnalysisListener());
-		String yellowTaxiTripFile = args[0];
-		JavaRDD<String> yellowTaxiTripLines = sparkContext.textFile(yellowTaxiTripFile);
-		TripAnalyzer tripAnalyzer = new TripAnalyzer(yellowTaxiTripLines);
+		JavaRDD<TaxiTrip> tripData = loadTripData(sparkContext, args[0]);
+		TripAnalyzer tripAnalyzer = new TripAnalyzer(tripData);
 		
 		TimeBand earlyMorning = new TimeBand(LocalTime.MIDNIGHT, LocalTime.of(6, 0));
 		TimeBand morning = new TimeBand(LocalTime.of(6, 0), LocalTime.NOON);
@@ -46,4 +45,8 @@ public class TripStatsPerTimeBandMain {
 				avgFarePerTrip);
 	}
 
+	private static JavaRDD<TaxiTrip> loadTripData(JavaSparkContext sparkContext, String taxiTripFile) {
+		TripDataLoader loader = new TextFileLoader(sparkContext, taxiTripFile);
+		return loader.fetchRecords();
+	}
 }

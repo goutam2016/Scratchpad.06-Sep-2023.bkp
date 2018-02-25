@@ -3,17 +3,15 @@ package org.gb.sample.spark.nytaxitrips;
 import java.time.Month;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
-public class TripsByPassengerCountMain {
+public class TripsByPassengerCountCsndraMain {
 
 	public static void main(String[] args) {
-		SparkConf conf = new SparkConf().setAppName("New York Yellow Taxis - selected trips");
-		JavaSparkContext sparkContext = new JavaSparkContext(conf);
-		JavaRDD<TaxiTrip> tripData = loadTripData(sparkContext, args[0]);
+		JavaSparkContext sparkContext = connectSparkToCassandra();
+		JavaRDD<TaxiTrip> tripData = loadTripData(sparkContext);
 		TripAnalyzer tripAnalyzer = new TripAnalyzer(tripData);
 		final int tshldPsngrCnt = 8;
 		List<TaxiTrip> tripsWithPsngrsAboveTshld = tripAnalyzer.getTripsWithPsngrsAboveTshld(tshldPsngrCnt);
@@ -25,9 +23,19 @@ public class TripsByPassengerCountMain {
 		avgPsngrCountPerMonth.forEach((month, avgPsngrCnt) -> System.out.printf("Average passenger count for %s --> %2.2f\n", month, avgPsngrCnt));
 		sparkContext.close();
 	}
-	
-	private static JavaRDD<TaxiTrip> loadTripData(JavaSparkContext sparkContext, String taxiTripFile) {
-		TripDataLoader loader = new TextFileLoader(sparkContext, taxiTripFile);
+
+	private static JavaRDD<TaxiTrip> loadTripData(JavaSparkContext sparkContext) {
+		TripDataLoader loader = new CassandraTableLoader(sparkContext);
 		return loader.fetchRecords();
+	}
+
+	private static JavaSparkContext connectSparkToCassandra() {
+		SparkConf sparkConf = new SparkConf();
+		sparkConf.set("spark.cassandra.connection.host", "localhost");
+		sparkConf.set("spark.cassandra.connection.port", "9042");
+		sparkConf.set("spark.app.name", "New York Yellow Taxis - selected trips");
+
+		JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
+		return sparkContext;
 	}
 }

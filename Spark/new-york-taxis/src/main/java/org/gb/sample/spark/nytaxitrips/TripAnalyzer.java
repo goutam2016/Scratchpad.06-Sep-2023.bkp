@@ -20,12 +20,10 @@ public class TripAnalyzer implements Serializable {
 
 	private static final long serialVersionUID = -3531081469539195154L;
 
-	private Converter converter;
 	private JavaRDD<TaxiTrip> taxiTrips;
 
-	TripAnalyzer(JavaRDD<String> taxiTripLines) {
-		converter = Converter.getInstance();
-		taxiTrips = taxiTripLines.map(converter::convertToTaxiTrip);
+	TripAnalyzer(JavaRDD<TaxiTrip> taxiTrips) {
+		this.taxiTrips = taxiTrips;
 	}
 
 	List<TaxiTrip> getTripsWithPsngrsAboveTshld(int tshldPsngrCnt) {

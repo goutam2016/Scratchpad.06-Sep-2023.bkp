@@ -11,8 +11,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<spark.version>2.1.0</spark.version>
+		<datastax.cassandra.version>3.2.0</datastax.cassandra.version>
+		<spark.cassandra.connector.version>2.0.6</spark.cassandra.connector.version>
+		<commons.codec.version>1.11</commons.codec.version>
 		<junit.version>4.12</junit.version>
 		<maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
+		<maven.shade.plugin.version>3.0.0</maven.shade.plugin.version>
 	</properties>
 
 	<dependencies>
@@ -20,7 +24,33 @@
 			<groupId>org.apache.spark</groupId>
 			<artifactId>spark-core_2.11</artifactId>
 			<version>${spark.version}</version>
-			<scope>provided</scope>
+			<!-- <scope>provided</scope> -->
+		</dependency>
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-sql_2.11</artifactId>
+			<version>${spark.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>${commons.codec.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.datastax.cassandra</groupId>
+			<artifactId>cassandra-driver-core</artifactId>
+			<version>${datastax.cassandra.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.datastax.cassandra</groupId>
+			<artifactId>cassandra-driver-mapping</artifactId>
+			<version>${datastax.cassandra.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.datastax.spark</groupId>
+			<artifactId>spark-cassandra-connector_2.11</artifactId>
+			<version>${spark.cassandra.connector.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -39,6 +69,22 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>${maven.shade.plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<finalName>uber-${project.artifactId}-${project.version}</finalName>
 				</configuration>
 			</plugin>
 		</plugins>

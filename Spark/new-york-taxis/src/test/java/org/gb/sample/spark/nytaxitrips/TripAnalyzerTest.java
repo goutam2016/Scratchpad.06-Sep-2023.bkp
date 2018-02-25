@@ -25,8 +25,9 @@ public class TripAnalyzerTest {
 	public static void setupForAll() {
 		SparkConf conf = new SparkConf().setMaster("local").setAppName("New York Yellow Taxi trips");
 		sparkContext = new JavaSparkContext(conf);
-		JavaRDD<String> taxiTripLines = sparkContext.textFile(TAXI_TRIP_FILE);
-		tripAnalyzer = new TripAnalyzer(taxiTripLines);
+		TripDataLoader loader = new TextFileLoader(sparkContext, TAXI_TRIP_FILE);
+		JavaRDD<TaxiTrip> taxiTrips = loader.fetchRecords();
+		tripAnalyzer = new TripAnalyzer(taxiTrips);
 	}
 
 	@AfterClass

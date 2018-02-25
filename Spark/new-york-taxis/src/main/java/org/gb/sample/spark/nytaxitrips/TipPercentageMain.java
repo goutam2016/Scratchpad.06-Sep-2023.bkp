@@ -9,12 +9,15 @@ public class TipPercentageMain {
 	public static void main(String[] args) {
 		SparkConf conf = new SparkConf().setAppName("New York Yellow Taxi trips - average tip as percentage of fare");
 		JavaSparkContext sparkContext = new JavaSparkContext(conf);
-		String yellowTaxiTripFile = args[0];
-		JavaRDD<String> yellowTaxiTripLines = sparkContext.textFile(yellowTaxiTripFile);
-		TripAnalyzer tripAnalyzer = new TripAnalyzer(yellowTaxiTripLines);
+		JavaRDD<TaxiTrip> tripData = loadTripData(sparkContext, args[0]);
+		TripAnalyzer tripAnalyzer = new TripAnalyzer(tripData);
 		double avgTipAsPctgOfFare = tripAnalyzer.computeAvgTipAsPercentageOfFare();
 		System.out.printf("On an average, tip paid is %2.2f percent of fare amount.\n", avgTipAsPctgOfFare);
 		sparkContext.close();
 	}
 
+	private static JavaRDD<TaxiTrip> loadTripData(JavaSparkContext sparkContext, String taxiTripFile) {
+		TripDataLoader loader = new TextFileLoader(sparkContext, taxiTripFile);
+		return loader.fetchRecords();
+	}
 }
