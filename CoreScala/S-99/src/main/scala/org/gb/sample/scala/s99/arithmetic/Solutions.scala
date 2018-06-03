@@ -70,7 +70,7 @@ object Solutions {
                 primesInRange
             }
         }
-        List.range(range.start, range.end).foldLeft(List[Int]())(primePicker)
+        range.foldLeft(List[Int]())(primePicker)
     }
 
     def p40_goldbach(number: Int): (Int, Int) = {
@@ -82,22 +82,12 @@ object Solutions {
         null
     }
 
-    def add(a: Int)(b: Int) = {
-        a + b
-    }
-
-    def sum(a: Int, b: Int) = {
-        a + b
+    def p41_goldbachsInRange(range: Range): Map[Int, (Int, Int)] = {
+        range.filter(_ % 2 == 0).map(number => (number, p40_goldbach(number))).toMap
     }
 
     def main(args: Array[String]): Unit = {
-        val x = add(1)(_)
-        println(x(2))
-        println(x(3))
-        println(x(4))
-        val y = sum(1, _:Int)
-        println(y(2))
-        println(y(3))
-        println(y(4))        
+        val goldbachsInRange = p41_goldbachsInRange(20 to 100).toList.sortBy(_._1)
+        goldbachsInRange.foreach(numberVsGb => println(numberVsGb._1 + " --> " + numberVsGb._2))
     }
 }
