@@ -3,7 +3,7 @@ package org.gb.sample.scala.s99.btree
 import org.scalatest.FunSuite
 
 class TreeTest extends FunSuite {
-    def buildTree(): Tree[String] = {
+    private def buildTree(): Tree[String] = {
         val level3_1 = Node("3.1")
         val level3_2 = Node("3.2")
         val level3_3 = Node("3.3")
@@ -38,5 +38,17 @@ class TreeTest extends FunSuite {
         val root = Node("a", Node("b"), Node("b"))
         val isSymmetric = root.p56_isSymmetric
         assertResult(true)(isSymmetric)
+    }
+
+    test("P67: string representation of a binary tree") {
+        val root = Node("a", Node("b1", Node("c1"), Node("c2")), Node("b2", End, Node("c3")))
+        val strReprs = root.p67_stringify()
+        assertResult("a(b1(c1,c2),b2(,c3))")(strReprs)
+    }
+
+    test("P67: binary tree from a string representation") {
+        val root = Tree.p67_fromString("a(b1(c1(d1),c2(d3,d4)),b2(,c3))")
+        val leafValues = root.p61A_collectLeafValues
+        assertResult(List("d1", "d3", "d4", "c3"))(leafValues)
     }
 }
