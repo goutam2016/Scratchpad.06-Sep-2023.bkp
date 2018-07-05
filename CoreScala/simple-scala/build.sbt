@@ -1,6 +1,7 @@
 import Dependencies._
 
 lazy val root = (project in file(".")).
+  enablePlugins(JmhPlugin).
   settings(
     inThisBuild(List(
       organization := "org.gb.sample.scala",
