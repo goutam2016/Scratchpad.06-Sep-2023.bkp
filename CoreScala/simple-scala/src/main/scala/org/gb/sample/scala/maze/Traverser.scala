@@ -4,47 +4,54 @@ trait Traverser {
 
     val totalRows: Int
     val totalColumns: Int
-    val maze: Map[Coordinate, Boolean]
+    val maze: Map[Coordinate, Status]
 
     def findShortestPath(startPos: Coordinate, destPos: Coordinate): Route
 
-    private def findOpenNeighbours(position: Coordinate): Seq[Coordinate] = {
-        val openHorizNeighbours = Seq(-1, 1).map(offset => Coordinate(position.x + offset, position.y)).filter(isOpen)
-        val openVertNeighbours = Seq(-1, 1).map(offset => Coordinate(position.x, position.y + offset)).filter(isOpen)
+    private def findValidNeighbours(position: Coordinate, currentRoute: Route): Seq[Coordinate] = {
+        val openHorizNeighbours = Seq(-1, 1).map(offset => Coordinate(position.x + offset, position.y)).filter(isValid(_, currentRoute))
+        val openVertNeighbours = Seq(-1, 1).map(offset => Coordinate(position.x, position.y + offset)).filter(isValid(_, currentRoute))
         openHorizNeighbours ++ openVertNeighbours
     }
 
-    protected def isOpen(position: Coordinate): Boolean = {
+    protected def isValid(position: Coordinate, currentRoute: Route): Boolean = {
         if (position.x >= 0 && position.x < totalColumns && position.y >= 0 && position.y < totalRows) {
-            maze.getOrElse(position, false)
+            val status = maze.get(position)
+            val isValid = if (status.isEmpty) false else status.get.isOpen
+            isValid
         } else {
             false
         }
     }
 
     protected final def addNeighbour(currentPosition: Coordinate, currentRoute: Route): Seq[Route] = {
-        val openNeighbours = findOpenNeighbours(currentPosition)
+        val openNeighbours = findValidNeighbours(currentPosition, currentRoute)
         val extndRoutes = for (
-            openNeighbour <- openNeighbours if (!currentRoute.traversedPositions.contains(openNeighbour))
+            openNeighbour <- openNeighbours
         ) yield {
             extend(currentRoute, openNeighbour)
         }
-        extndRoutes
+        extndRoutes.filterNot(_ == null)
     }
 
-    private def extend(currentRoute: Route, openNeighbour: Coordinate): Route = {
+    protected def extend(currentRoute: Route, openNeighbour: Coordinate): Route = {
         val extndRoute = currentRoute.copy()
-        openNeighbour.isDiscovered = true
         extndRoute.addPosition(openNeighbour)
         extndRoute
     }
 }
 
 object Traverser {
-    def getAllRoutesTraverser(totalRows: Int, totalColumns: Int, maze: Map[Coordinate, Boolean]): Traverser = {
+    def getAllRoutesTraverser(totalRows: Int, totalColumns: Int, maze: Map[Coordinate, Status]): Traverser = {
         new AllRoutesTraverser(totalRows, totalColumns, maze)
     }
-    def getBFSTraverser(totalRows: Int, totalColumns: Int, maze: Map[Coordinate, Boolean]): Traverser = {
+    def getBFSTraverser(totalRows: Int, totalColumns: Int, maze: Map[Coordinate, Status]): Traverser = {
         new BFSTraverser(totalRows, totalColumns, maze)
+    }
+    def getParallelAllRoutesTraverser(totalRows: Int, totalColumns: Int, maze: Map[Coordinate, Status]): Traverser = {
+        new ParallelAllRoutesTraverser(totalRows, totalColumns, maze)
+    }
+    def getParallelBFSTraverser(totalRows: Int, totalColumns: Int, maze: Map[Coordinate, Status]): Traverser = {
+        new ParallelBFSTraverser(totalRows, totalColumns, maze)
     }
 }

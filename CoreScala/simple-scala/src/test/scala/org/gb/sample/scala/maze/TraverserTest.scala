@@ -23,16 +23,17 @@ class TraverserTest extends FunSuite {
         closedPositions
     }
 
-    private def buildMaze(totalRows: Int, totalColumns: Int): Map[Coordinate, Boolean] = {
+    private def buildMaze(totalRows: Int, totalColumns: Int): Map[Coordinate, Status] = {
         val closedCoords = closedPositions()
 
-        val coordVsIsOpenPairs = for (rowIdx <- 0 to totalRows; colIdx <- 0 to totalColumns) yield {
+        val coordVsStatusPairs = for (rowIdx <- 0 to totalRows; colIdx <- 0 to totalColumns) yield {
             val position = Coordinate(rowIdx, colIdx)
             val isOpen = !closedCoords.contains((rowIdx, colIdx))
-            (position, isOpen)
+            val status = new Status(isOpen)
+            (position, status)
         }
 
-        coordVsIsOpenPairs.toMap
+        coordVsStatusPairs.toMap
     }
 
     test("the shortest path between 2 positions in a maze - check all paths") {
@@ -50,7 +51,25 @@ class TraverserTest extends FunSuite {
         val maze = buildMaze(totalRows, totalColumns)
         val traverser = Traverser.getBFSTraverser(totalRows, totalColumns, maze)
         val shortestPath = traverser.findShortestPath(Coordinate(4, 3), Coordinate(9, 9))
-        println(shortestPath.traversedPositions.size)
+        println(s"Length of shortest path: ${shortestPath.traversedPositions.size}")
+        shortestPath.traversedPositions.foreach(pos => println(s"(${pos.x}, ${pos.y})"))
+    }
+    test("the shortest path between 2 positions in a maze - parallel check all paths") {
+        val totalRows = 10
+        val totalColumns = 10
+        val maze = buildMaze(totalRows, totalColumns)
+        val traverser = Traverser.getParallelAllRoutesTraverser(totalRows, totalColumns, maze)
+        val shortestPath = traverser.findShortestPath(Coordinate(4, 3), Coordinate(9, 9))
+        println(s"Length of shortest path: ${shortestPath.traversedPositions.size}")
+        shortestPath.traversedPositions.foreach(pos => println(s"(${pos.x}, ${pos.y})"))
+    }
+    test("the shortest path between 2 positions in a maze - parallel breadth first search") {
+        val totalRows = 10
+        val totalColumns = 10
+        val maze = buildMaze(totalRows, totalColumns)
+        val traverser = Traverser.getParallelBFSTraverser(totalRows, totalColumns, maze)
+        val shortestPath = traverser.findShortestPath(Coordinate(4, 3), Coordinate(9, 9))
+        println(s"Length of shortest path: ${shortestPath.traversedPositions.size}")
         shortestPath.traversedPositions.foreach(pos => println(s"(${pos.x}, ${pos.y})"))
     }
 }

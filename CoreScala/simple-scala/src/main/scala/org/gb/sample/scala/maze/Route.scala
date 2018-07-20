@@ -12,6 +12,8 @@ class Route {
     def copy(): Route = {
         val copiedRoute = new Route
         copiedRoute.traversedPositions ++= traversedPositions
+        //copiedRoute.traversedPositions.foreach(pos => print(s"(${pos.x}, ${pos.y}):${pos.isDiscovered} "))
+        //println()
         copiedRoute
     }
 }

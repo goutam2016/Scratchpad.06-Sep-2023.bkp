@@ -25,16 +25,17 @@ class TraverserBenchmark {
         closedPositions
     }
 
-    private def buildMaze(totalRows: Int, totalColumns: Int): Map[Coordinate, Boolean] = {
+    private def buildMaze(totalRows: Int, totalColumns: Int): Map[Coordinate, Status] = {
         val closedCoords = closedPositions()
 
-        val coordVsIsOpenPairs = for (rowIdx <- 0 to totalRows; colIdx <- 0 to totalColumns) yield {
+        val coordVsStatusPairs = for (rowIdx <- 0 to totalRows; colIdx <- 0 to totalColumns) yield {
             val position = Coordinate(rowIdx, colIdx)
             val isOpen = !closedCoords.contains((rowIdx, colIdx))
-            (position, isOpen)
+            val status = new Status(isOpen)
+            (position, status)
         }
 
-        coordVsIsOpenPairs.toMap
+        coordVsStatusPairs.toMap
     }
 
     @Benchmark
@@ -53,6 +54,26 @@ class TraverserBenchmark {
         val totalColumns = 10
         val maze = buildMaze(totalRows, totalColumns)
         val traverser = Traverser.getBFSTraverser(totalRows, totalColumns, maze)
+        val shortestPath = traverser.findShortestPath(Coordinate(0, 0), Coordinate(9, 9))
+        println(s"Length of shortest path: ${shortestPath.traversedPositions.size}")
+    }
+
+    @Benchmark
+    def findShortestPath_ParallelAllRoutes(): Unit = {
+        val totalRows = 10
+        val totalColumns = 10
+        val maze = buildMaze(totalRows, totalColumns)
+        val traverser = Traverser.getParallelAllRoutesTraverser(totalRows, totalColumns, maze)
+        val shortestPath = traverser.findShortestPath(Coordinate(0, 0), Coordinate(9, 9))
+        println(s"Length of shortest path: ${shortestPath.traversedPositions.size}")
+    }
+
+    @Benchmark
+    def findShortestPath_ParallelBFS(): Unit = {
+        val totalRows = 10
+        val totalColumns = 10
+        val maze = buildMaze(totalRows, totalColumns)
+        val traverser = Traverser.getParallelBFSTraverser(totalRows, totalColumns, maze)
         val shortestPath = traverser.findShortestPath(Coordinate(0, 0), Coordinate(9, 9))
         println(s"Length of shortest path: ${shortestPath.traversedPositions.size}")
     }
