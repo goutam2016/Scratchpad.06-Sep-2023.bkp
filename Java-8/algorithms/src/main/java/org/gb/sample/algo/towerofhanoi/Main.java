@@ -17,6 +17,7 @@ public class Main {
 		stack.offerFirst("3");
 		stack.offerFirst("4");
 		stack.offerFirst("5");
+		//stack.clear();
 		//stack.offerFirst("F");
 		//stack.offerFirst("G");
 

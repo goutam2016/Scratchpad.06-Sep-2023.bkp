@@ -25,18 +25,26 @@ class Peg {
 
 	boolean addToTop(Ring ring) {
 		Ring topmostRing = rings.peek();
-
+		boolean added = false;
+		
 		if (topmostRing == null) {
-			return rings.offerFirst(ring);
+			added = rings.offerFirst(ring);
 		} else if (ring.getDiameter() > topmostRing.getDiameter()) {
-			return false;
+			added = false;
 		} else {
-			return rings.offerFirst(ring);
+			added = rings.offerFirst(ring);
 		}
+		
+		if(added) {
+			ring.setCurrentPeg(this);
+		}
+		
+		return added;
 	}
 
 	Ring removeFromTop() {
-		return rings.pollFirst();
+		Ring topmostRing = rings.pollFirst();
+		return topmostRing;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package org.gb.sample.algo.towerofhanoi;
 class Ring {
 
 	private final int diameter;
+	private Peg currentPeg;
 
 	Ring(int diameter) {
 		super();
@@ -11,6 +12,13 @@ class Ring {
 
 	int getDiameter() {
 		return diameter;
+	}
+	
+	Peg getCurrentPeg() {
+		return currentPeg;
+	}
+	void setCurrentPeg(Peg currentPeg) {
+		this.currentPeg = currentPeg;
 	}
 
 	@Override
