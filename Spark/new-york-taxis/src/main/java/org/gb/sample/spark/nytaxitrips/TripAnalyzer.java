@@ -13,6 +13,7 @@ import java.util.Objects;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function2;
+import org.apache.spark.broadcast.Broadcast;
 
 import scala.Tuple2;
 
@@ -102,6 +103,10 @@ public class TripAnalyzer implements Serializable {
 				.combineByKey(this::createTripStats, this::mergeTripStats, this::combineTripStats)
 				.mapValues(this::setAvgStats);
 		return tripStatsPerTimeBand.collectAsMap();
+	}
+
+	Map<TimeBand, TripStats> getTripStatsPerTimeBand(Broadcast<List<TimeBand>> timeBands) {
+		return getTripStatsPerTimeBand(timeBands.getValue());
 	}
 
 	private TripStats setAvgStats(TripStats tripStats) {
