@@ -15,13 +15,21 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 
 public class HadoopNewAPICustomTextInputFormat extends TextInputFormat {
 
+	/*
+	 * This method returns the size of a split in bytes. The number of partitions of an RDD can be derived by dividing the file size by split size returned by this method.
+	 * Tested with person-profile_1000000.txt
+	 * File size: 167 MB, when split-size = 10 MB, no. of partitions = 17
+	 * When 1 executor, then all 17 partitions are handled by 1 executor.
+	 * When 2 executors, then each executor handles 8 or 9 partitions.
+	 * When 4 executors, then each executor handles 4 or 5 partitions.
+	 */
 	@Override
 	protected long computeSplitSize(long goalSize, long minSize, long blockSize) {
 		long computedSplitSize = super.computeSplitSize(goalSize, minSize, blockSize);
 		System.out.println(String.format(
 				"Inside NewAPICustomTextInputFormat.computeSplitSize, goalSize: %d, minSize: %d, blockSize: %d, computedSplitSize: %d.",
 				goalSize, minSize, blockSize, computedSplitSize));
-		return 2 * 1024 * 1024;
+		return 10 * 1024 * 1024;
 	}
 
 	@Override
