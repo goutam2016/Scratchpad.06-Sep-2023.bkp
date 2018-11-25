@@ -12,7 +12,7 @@ public class TripsByPassengerCountCsndraMain {
 	public static void main(String[] args) {
 		JavaSparkContext sparkContext = connectSparkToCassandra();
 		JavaRDD<TaxiTrip> tripData = loadTripData(sparkContext);
-		TripAnalyzer tripAnalyzer = new TripAnalyzer(tripData);
+		TripAnalyzer tripAnalyzer = new RDDTripAnalyzer(tripData);
 		final int tshldPsngrCnt = 8;
 		List<TaxiTrip> tripsWithPsngrsAboveTshld = tripAnalyzer.getTripsWithPsngrsAboveTshld(tshldPsngrCnt);
 		System.out.printf("No. of taxi trips with at least %d passengers: %d.\n", tshldPsngrCnt,

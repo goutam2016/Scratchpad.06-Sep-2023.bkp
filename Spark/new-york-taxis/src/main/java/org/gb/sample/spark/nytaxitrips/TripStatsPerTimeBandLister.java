@@ -34,7 +34,7 @@ class TripStatsPerTimeBandLister {
 		LongAccumulator defectiveRecords = sparkContext.sc().longAccumulator("Defective Records");
 
 		JavaRDD<TaxiTrip> tripData = loadTripData(sparkContext, taxiTripFile, defectiveRecords);
-		TripAnalyzer tripAnalyzer = new TripAnalyzer(tripData);
+		TripAnalyzer tripAnalyzer = new RDDTripAnalyzer(tripData);
 
 		TimeBand earlyMorning = new TimeBand(LocalTime.MIDNIGHT, LocalTime.of(6, 0));
 		TimeBand morning = new TimeBand(LocalTime.of(6, 0), LocalTime.NOON);

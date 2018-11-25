@@ -5,6 +5,7 @@
 	%SPARK_HOME%\sbin\start-slave.sh spark://localhost:7077
 3.	From command prompt, run the application with spark-submit.
 	%SPARK_HOME%\bin\spark-submit --class org.gb.sample.spark.sql.income.TopIncomesMain --properties-file conf/standalone.properties target/simple-spark-sql-0.0.1-SNAPSHOT.jar data/income/name-vs-income_500.txt data/income/person-profile_500.txt
+	%SPARK_HOME%\bin\spark-submit --class org.gb.sample.spark.sql.income.IncomeBandMain --properties-file conf/standalone.properties target/simple-spark-sql-0.0.1-SNAPSHOT.jar data/income/name-vs-income_1000000.txt 0,30000,50000,75000,100000,125000
 
 	
 	

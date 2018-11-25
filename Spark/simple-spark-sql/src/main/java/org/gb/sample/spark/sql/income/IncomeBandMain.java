@@ -25,7 +25,7 @@ public class IncomeBandMain {
 		StructField[] bandLimitFields = { lowerLimitField, upperLimitField };
 		session.udf().register("mapToBandUDF", (String incomeStr) -> incomeBandMapper.mapToBandUDF(incomeStr),
 				DataTypes.createStructType(bandLimitFields));
-		Map<Band, Long> countPerIncomeBand = incomeBandMapper.getCountPerIncomeBand_old();
+		Map<Band, Long> countPerIncomeBand = incomeBandMapper.getCountPerIncomeBand();
 		countPerIncomeBand.forEach((band, count) -> System.out.println(band + " : " + count));
 		session.close();
 	}

@@ -6,3 +6,4 @@ public interface TripDataLoader {
 
 	JavaRDD<TaxiTrip> fetchRecords();
 }
+ 

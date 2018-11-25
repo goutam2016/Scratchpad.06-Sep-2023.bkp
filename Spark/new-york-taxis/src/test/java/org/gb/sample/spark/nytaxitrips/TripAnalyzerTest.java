@@ -19,7 +19,7 @@ public class TripAnalyzerTest {
 	private static final String TAXI_TRIP_FILE = "test-data/yellow_tripdata_1000.csv";
 	//private static final String TAXI_TRIP_FILE = "data/nytaxitrips/bkp.txt";
 	private static JavaSparkContext sparkContext;
-	private static TripAnalyzer tripAnalyzer;
+	private static RDDTripAnalyzer tripAnalyzer;
 
 	@BeforeClass
 	public static void setupForAll() {
@@ -27,7 +27,7 @@ public class TripAnalyzerTest {
 		sparkContext = new JavaSparkContext(conf);
 		TripDataLoader loader = new TextFileLoader(sparkContext, TAXI_TRIP_FILE);
 		JavaRDD<TaxiTrip> taxiTrips = loader.fetchRecords();
-		tripAnalyzer = new TripAnalyzer(taxiTrips);
+		tripAnalyzer = new RDDTripAnalyzer(taxiTrips);
 	}
 
 	@AfterClass
