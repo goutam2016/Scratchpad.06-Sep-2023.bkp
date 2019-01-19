@@ -10,6 +10,8 @@ import java.util.stream.StreamSupport;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.spark.HashPartitioner;
+import org.apache.spark.Partitioner;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -52,11 +54,31 @@ public class SparkBehaviourMain {
 
 	private static class CountComparator implements Comparator<Tuple2<String, Integer>>, Serializable {
 
+		private static final long serialVersionUID = -6975135648414927188L;
+
 		@Override
 		public int compare(Tuple2<String, Integer> cityVsCount1, Tuple2<String, Integer> cityVsCount2) {
 			return cityVsCount1._2().intValue() - cityVsCount2._2().intValue();
 		}
 
+	}
+	
+	private static class CityNamePartitioner extends HashPartitioner {
+
+		private static final long serialVersionUID = 6929859909657744436L;
+
+		private CityNamePartitioner(int partitions) {
+			super(partitions);
+		}
+		
+		@Override
+		public int getPartition(Object key) {
+			/*String cityName = (String) key;
+			if(cityName.endsWith("Ward")) {
+				return 5;
+			}*/
+			return super.getPartition(key);
+		}
 	}
 	
 	/*
@@ -67,11 +89,14 @@ public class SparkBehaviourMain {
 	 */
 	private static void citiesWithMostPeople_Using_reduceByKey(JavaRDD<String> personProfileLines, Converter converter,
 			int topNum) {
+		System.out.println("SparkBehaviourMain, using reduceByKey(), personProfileLines partitioner: " + personProfileLines.partitioner().isPresent());
 		JavaPairRDD<String, Integer> cityVsCountPairs = personProfileLines.map(converter::convertToPersProfile)
 				.map(PersonProfile::getCity).mapToPair(city -> new Tuple2<>(city, 1))
-				.reduceByKey((accCount, unit) -> accCount + unit);
+				.reduceByKey(new CityNamePartitioner(12), (accCount, unit) -> accCount + unit);
 		System.out.println(
-				"SparkBehaviourMain, cityVsCountPairs no. of partitions: " + cityVsCountPairs.getNumPartitions());
+				"SparkBehaviourMain, using reduceByKey(), cityVsCountPairs no. of partitions: " + cityVsCountPairs.getNumPartitions());
+		Partitioner partitioner = cityVsCountPairs.partitioner().get();
+		System.out.println("SparkBehaviourMain, using reduceByKey(), cityVsCountPairs partitioner: " + partitioner);
 		Comparator<Tuple2<String, Integer>> countComparator = new CountComparator();
 		List<Tuple2<String, Integer>> cityVsCountTuples = cityVsCountPairs.top(topNum, countComparator);
 		Map<String, Integer> countPerCity = cityVsCountTuples.stream()
@@ -79,6 +104,7 @@ public class SparkBehaviourMain {
 		System.out.println("SparkBehaviourMain, top cities by people.");
 		countPerCity.entrySet()
 				.forEach(cityVsCount -> System.out.println(cityVsCount.getKey() + " --> " + cityVsCount.getValue()));
+		countPerCity.entrySet().forEach(cityVsCount -> System.out.println("partition id: " + partitioner.getPartition(cityVsCount.getKey())));
 	}
 
 	/*
@@ -93,7 +119,8 @@ public class SparkBehaviourMain {
 				.stream(units.spliterator(), false).mapToInt(Integer::intValue).sum();
 		JavaPairRDD<String, Integer> cityVsCountPairs = cityVsUnits.mapValues(unitsAdder);
 		System.out.println(
-				"SparkBehaviourMain, cityVsCountPairs no. of partitions: " + cityVsCountPairs.getNumPartitions());
+				"SparkBehaviourMain, using groupByKey(), cityVsCountPairs no. of partitions: " + cityVsCountPairs.getNumPartitions());
+		System.out.println("SparkBehaviourMain, using groupByKey(), cityVsCountPairs partitioner: " + cityVsCountPairs.partitioner().get());
 		Comparator<Tuple2<String, Integer>> countComparator = new CountComparator();
 		List<Tuple2<String, Integer>> cityVsCountTuples = cityVsCountPairs.top(topNum, countComparator);
 		Map<String, Integer> countPerCity = cityVsCountTuples.stream()

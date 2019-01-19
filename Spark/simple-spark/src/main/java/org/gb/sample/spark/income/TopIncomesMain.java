@@ -16,9 +16,10 @@ public class TopIncomesMain {
 		String personProfileFile = args[1];
 		JavaRDD<String> nameVsIncomeLines = sc.textFile(nameVsIncomeFile);
 		JavaRDD<String> personProfileLines = sc.textFile(personProfileFile);
-		IncomeAnalyzer incomeAnalyzer = new IncomeAnalyzer(nameVsIncomeLines, personProfileLines);
-		Map<Integer, List<PersonProfile>> topIncomesWithPersonProfiles = incomeAnalyzer.getTopIncomePersonProfiles(10);
+		IncomeAnalyzer incomeAnalyzer = new BroadcastHashJoinIncomeAnalyzer(personProfileLines);
+		Map<Integer, List<PersonProfile>> topIncomesWithPersonProfiles = incomeAnalyzer.getTopIncomePersonProfiles(nameVsIncomeLines, 10);
 		topIncomesWithPersonProfiles.forEach(TopIncomesMain::printIncomeWithPersonProfiles);
+		incomeAnalyzer.cleanup();
 		sc.close();
 	}
 
