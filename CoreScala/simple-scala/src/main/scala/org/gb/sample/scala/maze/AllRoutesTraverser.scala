@@ -9,7 +9,7 @@ class AllRoutesTraverser(val totalRows: Int, val totalColumns: Int, val maze: Ma
         val initialRoute = new Route
         initialRoute.addPosition(startPos)
         val routes = findRoutes(startPos, destPos, initialRoute)
-        println(s"Total routes found: ${routes.size}")
+        //println(s"Total routes found: ${routes.size}")
         val shortestRoute = routes.minBy(_.traversedPositions.size)
         shortestRoute
     }
@@ -27,7 +27,7 @@ class AllRoutesTraverser(val totalRows: Int, val totalColumns: Int, val maze: Ma
     def findRoutes(currentPosition: Coordinate, destPos: Coordinate, currentRoute: Route): Seq[Route] = {
         val extndRoutes = addNeighbour(currentPosition, currentRoute)
 
-        println(s"No. of extended routes: ${extndRoutes.size}")
+        //println(s"No. of extended routes: ${extndRoutes.size}")
 
         var completedRoutes = extndRoutes.filter(extndRoute => extndRoute.traversedPositions.last.equals(destPos))
 

@@ -47,7 +47,7 @@ class BFSTraverser(val totalRows: Int, val totalColumns: Int, val maze: Map[Coor
     private def findRouteToDestination(destPos: Coordinate, foundRoutes: Seq[Route]): Route = {
         val extndRoutes = foundRoutes.map(foundRoute => addNeighbour(foundRoute.traversedPositions.last, foundRoute)).flatten
 
-        println(s"No. of extended routes: ${extndRoutes.size}")
+        //println(s"No. of extended routes: ${extndRoutes.size}")
 
         if (extndRoutes.isEmpty) {
             println("No extended routes, returning null")

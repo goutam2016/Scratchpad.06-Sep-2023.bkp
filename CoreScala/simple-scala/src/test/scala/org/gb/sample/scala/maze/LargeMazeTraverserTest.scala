@@ -132,11 +132,11 @@ class LargeMazeTraverserTest extends FunSuite {
         val maze = buildMaze(totalRows, totalColumns)
         val traverser = Traverser.getBFSTraverser(totalRows, totalColumns, maze)
         val shortestPath = traverser.findShortestPath(Coordinate(0, 0), Coordinate(99, 99))
-
-        if (shortestPath != null) {
+        assertResult(199)(shortestPath.traversedPositions.size)
+        /*if (shortestPath != null) {
             println(shortestPath.traversedPositions.size)
             shortestPath.traversedPositions.foreach(pos => println(s"(${pos.x}, ${pos.y})"))
-        }
+        }*/
     }
     test("the shortest path between 2 positions in a maze - parallel breadth first search") {
         val totalRows = 100
@@ -144,10 +144,10 @@ class LargeMazeTraverserTest extends FunSuite {
         val maze = buildMaze(totalRows, totalColumns)
         val traverser = Traverser.getParallelBFSTraverser(totalRows, totalColumns, maze)
         val shortestPath = traverser.findShortestPath(Coordinate(0, 0), Coordinate(99, 99))
-
-        if (shortestPath != null) {
+        assertResult(199)(shortestPath.traversedPositions.size)
+        /*if (shortestPath != null) {
             println(shortestPath.traversedPositions.size)
             shortestPath.traversedPositions.foreach(pos => println(s"(${pos.x}, ${pos.y})"))
-        }
+        }*/
     }
 }

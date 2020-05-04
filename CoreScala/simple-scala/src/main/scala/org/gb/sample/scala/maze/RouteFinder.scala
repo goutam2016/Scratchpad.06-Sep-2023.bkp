@@ -49,8 +49,8 @@ class RouteFinder(totalRows: Int, totalColumns: Int, maze: Map[Coordinate, Statu
         val completedRoutes = extndRoutes.filter(extndRoute => extndRoute.traversedPositions.last.equals(destPos))
 
         if (completedRoutes.nonEmpty) {
-            println(s"Found ${completedRoutes.size} completed routes")
-            completedRoutes.foreach(cmplRt => println(s"completed route of length: ${cmplRt.traversedPositions.size}"))
+            //println(s"Found ${completedRoutes.size} completed routes")
+            //completedRoutes.foreach(cmplRt => println(s"completed route of length: ${cmplRt.traversedPositions.size}"))
             return completedRoutes.head
         }
 
