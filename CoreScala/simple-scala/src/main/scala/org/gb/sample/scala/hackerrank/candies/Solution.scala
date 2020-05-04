@@ -1,75 +1,74 @@
 package org.gb.sample.scala.hackerrank.candies
 
 object Solution {
-    private def incrementRight(segmentRatings: Array[Int], minRating: Int, minCandies: Int, segmentCandies: Array[Int], errorIdx: Int): Unit = {
+    private def incrementBack(segmentRatings: Array[Int], minRating: Int, minCandies: Int, segmentCandies: Array[Int], beginIdx: Int, errorIdx: Int): Unit = {
         segmentCandies(errorIdx) = segmentCandies(errorIdx) + 1
 
         val ratingAndCandiesChecker = (idx: Int) => {
+            val prevIdx = if (beginIdx == 0) idx - 1 else idx + 1
             val rating = segmentRatings(idx)
-            val ratingRight = if (idx == segmentRatings.size - 1) minRating else segmentRatings(idx + 1)
+            val prevRating = if (idx == beginIdx) minRating else segmentRatings(prevIdx)
             val candies = segmentCandies(idx)
-            val candiesRight = if (idx == segmentRatings.size - 1) minCandies else segmentCandies(idx + 1)
-            ratingRight > rating && candiesRight <= candies
+            val prevCandies = if (idx == beginIdx) minCandies else segmentCandies(prevIdx)
+            prevRating > rating && prevCandies <= candies
         }
 
-        Range(errorIdx, segmentRatings.size).toStream.takeWhile(ratingAndCandiesChecker).foreach(idx => segmentCandies.update(idx + 1, segmentCandies(idx) + 1))
-    }
-
-    private def incrementLeft(segmentRatings: Array[Int], minRating: Int, minCandies: Int, segmentCandies: Array[Int], errorIdx: Int): Unit = {
-        segmentCandies(errorIdx) = segmentCandies(errorIdx) + 1
-
-        val ratingAndCandiesChecker = (idx: Int) => {
-            val rating = segmentRatings(idx)
-            val ratingLeft = if (idx == 0) minRating else segmentRatings(idx - 1)
-            val candies = segmentCandies(idx)
-            val candiesLeft = if (idx == 0) minCandies else segmentCandies(idx - 1)
-            ratingLeft > rating && candiesLeft <= candies
+        /*
+         * When beginIdx = 0, it means we are distributing right and need to back adjust left.
+         * When beginIdx > 0, it means we are distributing left and need to back adjust right.
+         */
+        if (beginIdx == 0) {
+            Range(errorIdx, -1, -1).toStream.takeWhile(ratingAndCandiesChecker).foreach(idx => segmentCandies.update(idx - 1, segmentCandies(idx) + 1))
+        } else {
+            Range(errorIdx, segmentRatings.size).toStream.takeWhile(ratingAndCandiesChecker).foreach(idx => segmentCandies.update(idx + 1, segmentCandies(idx) + 1))
         }
+    }
+    
+    private def allocateCandiesAtCurrIdx(segmentRatings: Array[Int], segmentCandies: Array[Int], minRating: Int, minCandies: Int, beginIdx: Int, currIdx: Int): Unit = {
+        /*
+         * When beginIdx = 0, it means we are distributing rightwards.
+         * When beginIdx > 0, it means we are distributing leftwards.
+         */
+        val prevIdx = if (beginIdx == 0) currIdx - 1 else currIdx + 1
+        val prevRating = if (currIdx == beginIdx) minRating else segmentRatings(prevIdx)
+        val prevCandies = if (currIdx == beginIdx) minCandies else segmentCandies(prevIdx)
 
-        Range(errorIdx, -1, -1).toStream.takeWhile(ratingAndCandiesChecker).foreach(idx => segmentCandies.update(idx - 1, segmentCandies(idx) + 1))
+        val rating = segmentRatings(currIdx)
+        val candies = if (rating > prevRating) prevCandies + 1 else if (prevCandies - 1 > minCandies) minCandies else prevCandies - 1
+        segmentCandies(currIdx) = candies
+
+        if (candies == 0) {
+            incrementBack(segmentRatings, minRating, minCandies, segmentCandies, beginIdx, currIdx)
+        }
     }
 
+    /*
+     * Take one segment and distribute candies to each index one by one towards the left, until index 0 is reached, which ends the segment.
+     */
     private def distributeLeft(ratings: Array[Int], segmentStartIdx: Int, segmentEndIdx: Int, minRating: Int, minCandies: Int): Array[Int] = {
         val segmentRatings = ratings.slice(segmentStartIdx, segmentEndIdx)
         val segmentCandies = segmentRatings.map(_ => -1)
-        
-        val allocateCandies = (idx: Int) => {
-            val ratingRight = if (idx == segmentRatings.size - 1) minRating else segmentRatings(idx + 1)
-            val candiesRight = if (idx == segmentRatings.size - 1) minCandies else segmentCandies(idx + 1)
 
-            val rating = segmentRatings(idx)
-            val candies = if (rating > ratingRight) candiesRight + 1 else if (candiesRight - 1 > minCandies) minCandies else candiesRight - 1
-            segmentCandies(idx) = candies
+        val allocateCandies = (idx: Int) => allocateCandiesAtCurrIdx(segmentRatings, segmentCandies, minRating, minCandies, segmentRatings.size - 1, idx)
 
-            if (candies == 0) {
-                incrementRight(segmentRatings, minRating, minCandies, segmentCandies, idx)
-            }
-        }
-        
         Range(segmentRatings.size - 1, -1, -1).toStream.foreach(allocateCandies)
 
         return segmentCandies
     }
 
+    /*
+     * Take one segment and distribute candies to each index one by one towards the right, until a minimum rating is reached, which ends the segment.
+     */
     private def distributeRight(ratings: Array[Int], segmentStartIdx: Int, segmentEndIdx: Int, minRating: Int, minCandies: Int): Array[Int] = {
         val segmentRatings = ratings.slice(segmentStartIdx, segmentEndIdx)
         val segmentCandies = segmentRatings.map(_ => -1)
         val segmentEndsWithMinRating = segmentEndIdx < ratings.size
 
         val allocateCandies = (idx: Int) => {
-            val ratingLeft = if (idx == 0) minRating else segmentRatings(idx - 1)
-            val candiesLeft = if (idx == 0) minCandies else segmentCandies(idx - 1)
+            allocateCandiesAtCurrIdx(segmentRatings, segmentCandies, minRating, minCandies, 0, idx)
 
-            val rating = segmentRatings(idx)
-            val candies = if (rating > ratingLeft) candiesLeft + 1 else if (candiesLeft - 1 > minCandies) minCandies else candiesLeft - 1
-            segmentCandies(idx) = candies
-
-            if (candies == 0) {
-                incrementLeft(segmentRatings, minRating, minCandies, segmentCandies, idx)
-            }
-            
             if (segmentEndsWithMinRating && idx == segmentRatings.size - 1 && segmentCandies(idx) == minCandies) {
-                incrementLeft(segmentRatings, minRating, minCandies, segmentCandies, idx)
+                incrementBack(segmentRatings, minRating, minCandies, segmentCandies, 0, idx)
             }
         }
 

@@ -1,7 +1,6 @@
 package org.gb.sample.scala.hackerrank.maxarraysum
 
 import scala.collection.mutable.Map
-import scala.annotation.tailrec
 
 object Solution {
     def maxSubsetSum(numbers: Array[Int]): Int = {
@@ -12,20 +11,17 @@ object Solution {
 
     private def findNonAdjMaxSum(currIdx: Int, maxIdx: Int, numbers: Array[Int], nonAdjMaxSumPerIndex: Map[Int, Int]): Int = {
         val number = numbers(currIdx)
-        var nonAdjMaxSum = 0
-
-        if (currIdx > maxIdx - 2) {
-            nonAdjMaxSum = number
-        } else {
-            nonAdjMaxSum = nonAdjMaxSumPerIndex.filter(_._1 > currIdx + 1).map(_._2).max
-
-            nonAdjMaxSum =
-                if (number < 0 || nonAdjMaxSum < 0) {
-                    Integer.max(number, nonAdjMaxSum)
+        val nonAdjMaxSum =
+            if (currIdx > maxIdx - 2) {
+                number
+            } else {
+                val tmpNonAdjMaxSum = nonAdjMaxSumPerIndex.filter(_._1 > currIdx + 1).map(_._2).max
+                if (number < 0 || tmpNonAdjMaxSum < 0) {
+                    Integer.max(number, tmpNonAdjMaxSum)
                 } else {
-                    number + nonAdjMaxSum
+                    number + tmpNonAdjMaxSum
                 }
-        }
+            }
 
         nonAdjMaxSumPerIndex.put(currIdx, nonAdjMaxSum)
 

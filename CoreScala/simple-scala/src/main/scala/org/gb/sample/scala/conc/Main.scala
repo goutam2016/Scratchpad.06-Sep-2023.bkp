@@ -8,16 +8,16 @@ import scala.util.Random
 
 object Main {
     def main(args: Array[String]): Unit = {
-        val future = Future.apply(sayHello())
+        val future = Future.apply(sayHello("hello world"))
         println(future.isCompleted)
         val result = Await.result(future, Duration(10, "seconds"))
         println(result)
         println(future.isCompleted)
     }
     
-    def sayHello(): String = {
-        Thread.sleep(5000)
-        "Hello World"
+    def sayHello(msg: String): String = {
+        Thread.sleep(8000)
+        msg
     }
 
     /*def main(args: Array[String]): Unit = {
