@@ -1,8 +1,8 @@
 package org.gb.sample.scala.hackerrank.maxarraysum
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class SolutionTest extends FunSuite {
+class SolutionTest extends AnyFunSuite {
 
     test("maximum sum of non adjacent numbers - 1") {
         val numbers = Array[Int](3, 5, -7, 8, 10)

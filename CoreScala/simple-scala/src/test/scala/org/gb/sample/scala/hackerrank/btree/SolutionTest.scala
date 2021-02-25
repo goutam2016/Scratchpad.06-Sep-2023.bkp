@@ -1,8 +1,8 @@
 package org.gb.sample.scala.hackerrank.btree
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class SolutionTest extends FunSuite {
+class SolutionTest extends AnyFunSuite {
 
     private val binaryTree = buildBinaryTree()
 

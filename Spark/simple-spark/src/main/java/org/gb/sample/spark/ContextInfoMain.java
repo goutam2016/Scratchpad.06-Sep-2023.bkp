@@ -17,7 +17,7 @@ public class ContextInfoMain {
 		String user = sc.sparkUser();
 		String appId = sc.getConf().getAppId();
 		Tuple2<String, String>[] parameterPairs = sc.getConf().getAll();
-
+		
 		System.out.println("Spark Home: " + sparkHome);
 		System.out.println("App Name: " + appName);
 		System.out.println("Is local? " + local);

@@ -9,7 +9,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 public class TripsByPassengerCountCsndraMain {
 
-	public static void main(String[] args) {
+	public static void main(String[] args1) {
 		JavaSparkContext sparkContext = connectSparkToCassandra();
 		JavaRDD<TaxiTrip> tripData = loadTripData(sparkContext);
 		TripAnalyzer tripAnalyzer = new RDDTripAnalyzer(tripData);

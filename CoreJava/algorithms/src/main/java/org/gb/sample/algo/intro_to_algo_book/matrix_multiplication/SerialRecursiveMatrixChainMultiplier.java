@@ -8,13 +8,13 @@ class SerialRecursiveMatrixChainMultiplier extends AbstractMatrixChainMultiplier
 	Matrix computeOptimalOrderInternal(List<Matrix> matrixChain) {
 		Matrix optimalProduct = null;
 		if (matrixChain.size() == 1) {
-			Matrix matrix = matrixChain.get(0);
-			optimalProduct = new Matrix(matrix.getSimpleProductName(), matrix.getRowCount(), matrix.getColumnCount());
+			optimalProduct = matrixChain.get(0);
 		} else if (matrixChain.size() == 2) {
 			Matrix leftMatrix = matrixChain.get(0);
 			Matrix rightMatrix = matrixChain.get(1);
 			int multiplyCount = leftMatrix.getRowCount() * leftMatrix.getColumnCount() * rightMatrix.getColumnCount();
-			optimalProduct = new Matrix(leftMatrix, rightMatrix, leftMatrix.getRowCount(), rightMatrix.getColumnCount(), multiplyCount);
+			optimalProduct = new Matrix(leftMatrix, rightMatrix, leftMatrix.getRowCount(), rightMatrix.getColumnCount(),
+					multiplyCount);
 		} else {
 			int matrixCount = matrixChain.size();
 			int minCumltvMultiplyCount = Integer.MAX_VALUE;
@@ -27,14 +27,15 @@ class SerialRecursiveMatrixChainMultiplier extends AbstractMatrixChainMultiplier
 				Matrix rightSubchainTail = matrixChain.get(matrixCount - 1);
 				Matrix leftSubchainOptimalProduct = computeOptimalOrderInternal(leftSubchain);
 				Matrix rightSubchainOptimalProduct = computeOptimalOrderInternal(rightSubchain);
-				int subchainsMultiplyCount = leftSubchainHead.getRowCount() * leftSubchainTail.getColumnCount() * rightSubchainTail.getColumnCount();
-				int cumltvMultiplyCount = leftSubchainOptimalProduct.getCumulativeMultiplyCount() + rightSubchainOptimalProduct.getCumulativeMultiplyCount()
-						+ subchainsMultiplyCount;
+				int subchainsMultiplyCount = leftSubchainHead.getRowCount() * leftSubchainTail.getColumnCount()
+						* rightSubchainTail.getColumnCount();
+				int cumltvMultiplyCount = leftSubchainOptimalProduct.getCumulativeMultiplyCount()
+						+ rightSubchainOptimalProduct.getCumulativeMultiplyCount() + subchainsMultiplyCount;
 
 				if (cumltvMultiplyCount < minCumltvMultiplyCount) {
 					minCumltvMultiplyCount = cumltvMultiplyCount;
-					optimalProduct = new Matrix(leftSubchainOptimalProduct, rightSubchainOptimalProduct, leftSubchainHead.getRowCount(),
-							rightSubchainTail.getColumnCount(), minCumltvMultiplyCount);
+					optimalProduct = new Matrix(leftSubchainOptimalProduct, rightSubchainOptimalProduct,
+							leftSubchainHead.getRowCount(), rightSubchainTail.getColumnCount(), minCumltvMultiplyCount);
 				}
 			}
 		}

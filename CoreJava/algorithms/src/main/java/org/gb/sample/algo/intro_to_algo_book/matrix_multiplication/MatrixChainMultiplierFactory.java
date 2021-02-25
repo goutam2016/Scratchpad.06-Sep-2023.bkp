@@ -10,6 +10,10 @@ final class MatrixChainMultiplierFactory {
 		return new SerialRecursiveMatrixChainMultiplier();
 	}
 
+	static MatrixChainMultiplier getSerialTailRecursiveMatrixChainMultiplier() {
+		return new SerialTailRecursiveMatrixChainMultiplier();
+	}
+
 	static MatrixChainMultiplier getSerialBottomUpMatrixChainMultiplier() {
 		return new SerialBottomUpMatrixChainMultiplier();
 	}
@@ -25,8 +29,8 @@ final class MatrixChainMultiplierFactory {
 	static MatrixChainMultiplier getFJMapMemoizedMatrixChainMultiplier(int parallelism) {
 		return new FJMapMemoizedMatrixChainMultiplier(parallelism);
 	}
-	
+
 	static MatrixChainMultiplier getFJArrayMemoizedMatrixChainMultiplier(int parallelism) {
 		return new FJArrayMemoizedMatrixChainMultiplier(parallelism);
-	}	
+	}
 }

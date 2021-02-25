@@ -7,7 +7,7 @@ public class Genus {
 
 	private String name;
 	private String description;
-	private String literalMeaning;
+	//private String literalMeaning;
 
 	public String getName() {
 		return name;
@@ -23,10 +23,10 @@ public class Genus {
 		this.description = description;
 	}
 
-	public String getLiteralMeaning() {
+/*	public String getLiteralMeaning() {
 		return literalMeaning;
 	}
 	public void setLiteralMeaning(String literalMeaning) {
 		this.literalMeaning = literalMeaning;
-	}
+	}*/
 }

@@ -24,7 +24,7 @@ public class SparkSQLTripsByPassengerCountMain {
 		Map<Month, Double> avgPsngrCountPerMonth = tripAnalyzer.getAvgPsngrCountPerMonth();
 		avgPsngrCountPerMonth.forEach((month, avgPsngrCnt) -> System.out
 				.printf("Average passenger count for %s --> %2.2f\n", month, avgPsngrCnt));
-		session.close();
+		//session.close();
 	}
 
 }

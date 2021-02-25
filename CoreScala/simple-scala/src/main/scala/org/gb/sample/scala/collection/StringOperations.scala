@@ -31,7 +31,7 @@ object StringOperations {
     }
 
     def groupCountByWord(words: IndexedSeq[String]): Map[String, Int] = {
-        words.groupBy(word => word).mapValues(_.size)
+        words.groupBy(word => word).view.mapValues(_.size).toMap
     }
 
     def concatenateWithSeparator(items: IndexedSeq[String]): String = {

@@ -20,3 +20,4 @@
 	%SPARK_HOME%\bin\spark-submit --class org.gb.sample.spark.nytaxitrips.Main --properties-file simple-spark/conf/standalone.properties simple-spark/target/simple-spark-0.0.1-SNAPSHOT.jar simple-spark/data/nytaxitrips/yellow_tripdata_100000.csv
 	%SPARK_HOME%\bin\spark-submit --class org.gb.sample.spark.income.IncomeBandMain --properties-file simple-spark/conf/standalone.properties simple-spark/target/simple-spark-0.0.1-SNAPSHOT.jar simple-spark/data/income/name-vs-income_50000.txt 0,30000,50000,80000
 	%SPARK_HOME%\bin\spark-submit --class org.gb.sample.spark.income.IncomeBandMain --master yarn target/simple-spark-0.0.1-SNAPSHOT.jar hdfs://localhost:9000/data/scratchpad/simple-spark/income/name-vs-income_1000000.txt 0,30000,50000,75000,100000,125000
+	spark-submit --class org.gb.sample.spark.income.YearlyTopIncomesMain --properties-file conf/standalone.properties target/simple-spark-0.0.1-SNAPSHOT.jar data/income/yearly/1000000/ data/income/person-profile_1000000.txt

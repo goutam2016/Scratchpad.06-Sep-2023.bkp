@@ -1,5 +1,6 @@
 DROP KEYSPACE IF EXISTS nytaxis;
-CREATE KEYSPACE nytaxis WITH replication = {'class': 'SimpleStrategy', 'replication_factor':3};
+CREATE KEYSPACE nytaxis WITH replication = {'class': 'SimpleStrategy', 'replication_factor':2};
+USE nytaxis;
 
 CREATE TABLE trip_record ( 
 	vendor_id tinyint,
@@ -30,4 +31,4 @@ COPY trip_record
 	ratecode_id, store_and_fwd, dropoff_longitude, dropoff_latitude, payment_type, fare_amount, extra, mta_tax,
 	tip_amount, tolls_amount, improvement_surcharge, total_amount
 )  
-FROM 'test-data/yellow_tripdata_1000.csv';
+FROM 'test-data/yellow_tripdata_100000.csv';

@@ -21,6 +21,6 @@ public class SparkSQLMonthlyMaxMinFaresMain {
 		maxMinFaresPerMonth.forEach((month, maxMinFares) -> System.out.printf(
 				"Month: %s, timeband: %s, maximum fare: %s, minimum fare: %s.\n", month, maxMinFares.getTimeBand(),
 				maxMinFares.getMaxFareAmount(), maxMinFares.getMinFareAmount()));
-		session.close();
+		//session.close();
 	}
 }

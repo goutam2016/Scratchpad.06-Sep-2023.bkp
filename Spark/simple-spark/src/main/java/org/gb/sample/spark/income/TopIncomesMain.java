@@ -10,16 +10,17 @@ import org.apache.spark.api.java.JavaSparkContext;
 public class TopIncomesMain {
 
 	public static void main(String[] args) {
+		System.out.println("Inside TopIncomesMain.main(), without SparkContext created.");
 		SparkConf conf = new SparkConf().setAppName("Person profiles with top incomes");
 		JavaSparkContext sc = new JavaSparkContext(conf);
-		String nameVsIncomeFile = args[0];
+/*		String nameVsIncomeFile = args[0];
 		String personProfileFile = args[1];
 		JavaRDD<String> nameVsIncomeLines = sc.textFile(nameVsIncomeFile);
 		JavaRDD<String> personProfileLines = sc.textFile(personProfileFile);
 		IncomeAnalyzer incomeAnalyzer = new BroadcastHashJoinIncomeAnalyzer(personProfileLines);
 		Map<Integer, List<PersonProfile>> topIncomesWithPersonProfiles = incomeAnalyzer.getTopIncomePersonProfiles(nameVsIncomeLines, 10);
 		topIncomesWithPersonProfiles.forEach(TopIncomesMain::printIncomeWithPersonProfiles);
-		incomeAnalyzer.cleanup();
+		incomeAnalyzer.cleanup();*/
 		sc.close();
 	}
 

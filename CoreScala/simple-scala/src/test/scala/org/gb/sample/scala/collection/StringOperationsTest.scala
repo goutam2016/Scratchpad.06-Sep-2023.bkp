@@ -1,10 +1,10 @@
 package org.gb.sample.scala.collection
 
 import scala.collection.immutable.IndexedSeq
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import scala.collection.immutable.Map
 
-class StringOperationsTest extends FunSuite {
+class StringOperationsTest extends AnyFunSuite {
     test("all items are capitalized") {
         val names = IndexedSeq("Gulai", "ppo", "durBa", "Mumun", "SwapanKaku")
         val expectedNames = IndexedSeq("GULAI", "PPO", "DURBA", "MUMUN", "SWAPANKAKU");

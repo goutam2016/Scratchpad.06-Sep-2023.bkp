@@ -1,0 +1,310 @@
+{
+    "version": "1.4.0",
+    "project": {
+        "name": "root",
+        "directory": "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala",
+        "workspaceDir": "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala",
+        "sources": [
+            "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala/src/main/scala",
+            "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala/src/main/scala-2.13",
+            "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala/src/main/scala-2",
+            "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala/src/main/java",
+            "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala/target/scala-2.13/src_managed/main"
+        ],
+        "dependencies": [
+            
+        ],
+        "classpath": [
+            "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.4/scala-library-2.13.4.jar",
+            "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/pl/project13/scala/sbt-jmh-extras/0.3.3/sbt-jmh-extras-0.3.3.jar",
+            "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-core/1.20/jmh-core-1.20.jar",
+            "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-generator-bytecode/1.20/jmh-generator-bytecode-1.20.jar",
+            "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-generator-reflection/1.20/jmh-generator-reflection-1.20.jar",
+            "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-parallel-collections_2.13/1.0.0/scala-parallel-collections_2.13-1.0.0.jar",
+            "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-generator-asm/1.20/jmh-generator-asm-1.20.jar",
+            "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/net/sf/jopt-simple/jopt-simple/4.6/jopt-simple-4.6.jar",
+            "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/apache/commons/commons-math3/3.2/commons-math3-3.2.jar",
+            "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm/5.0.3/asm-5.0.3.jar"
+        ],
+        "out": "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala/.bloop/root",
+        "classesDir": "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala/.bloop/root/scala-2.13/classes",
+        "resources": [
+            "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala/src/main/resources",
+            "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala/target/scala-2.13/resource_managed/main"
+        ],
+        "scala": {
+            "organization": "org.scala-lang",
+            "name": "scala-compiler",
+            "version": "2.13.4",
+            "options": [
+                
+            ],
+            "jars": [
+                "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.13.4/scala-compiler-2.13.4.jar",
+                "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.4/scala-library-2.13.4.jar",
+                "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.4/scala-reflect-2.13.4.jar",
+                "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/jline/jline/3.16.0/jline-3.16.0.jar",
+                "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/net/java/dev/jna/jna/5.3.1/jna-5.3.1.jar"
+            ],
+            "analysis": "/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala/target/streams/compile/bloopAnalysisOut/_global/streams/inc_compile_2.13.zip",
+            "setup": {
+                "order": "mixed",
+                "addLibraryToBootClasspath": true,
+                "addCompilerToClasspath": false,
+                "addExtraJarsToClasspath": false,
+                "manageBootClasspath": true,
+                "filterLibraryFromClasspath": true
+            }
+        },
+        "java": {
+            "options": [
+                
+            ]
+        },
+        "test": {
+            "frameworks": [
+                {
+                    "names": [
+                        "org.scalacheck.ScalaCheckFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.specs2.runner.Specs2Framework",
+                        "org.specs2.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.specs.runner.SpecsFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "org.scalatest.tools.Framework",
+                        "org.scalatest.tools.ScalaTestFramework"
+                    ]
+                },
+                {
+                    "names": [
+                        "com.novocode.junit.JUnitFramework"
+                    ]
+                }
+            ],
+            "options": {
+                "excludes": [
+                    
+                ],
+                "arguments": [
+                    
+                ]
+            }
+        },
+        "platform": {
+            "name": "jvm",
+            "config": {
+                "home": "/Library/Java/JavaVirtualMachines/jdk-11.0.2.jdk/Contents/Home",
+                "options": [
+                    "-Duser.dir=/WorkArea/Workspaces/Scratchpad/CoreScala/simple-scala"
+                ]
+            },
+            "mainClass": [
+                
+            ]
+        },
+        "resolution": {
+            "modules": [
+                {
+                    "organization": "org.scala-lang",
+                    "name": "scala-library",
+                    "version": "2.13.4",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "scala-library",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.4/scala-library-2.13.4.jar"
+                        },
+                        {
+                            "name": "scala-library",
+                            "classifier": "sources",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.4/scala-library-2.13.4-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "pl.project13.scala",
+                    "name": "sbt-jmh-extras",
+                    "version": "0.3.3",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "sbt-jmh-extras",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/pl/project13/scala/sbt-jmh-extras/0.3.3/sbt-jmh-extras-0.3.3.jar"
+                        },
+                        {
+                            "name": "sbt-jmh-extras",
+                            "classifier": "sources",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/pl/project13/scala/sbt-jmh-extras/0.3.3/sbt-jmh-extras-0.3.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.openjdk.jmh",
+                    "name": "jmh-core",
+                    "version": "1.20",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jmh-core",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-core/1.20/jmh-core-1.20.jar"
+                        },
+                        {
+                            "name": "jmh-core",
+                            "classifier": "sources",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-core/1.20/jmh-core-1.20-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.openjdk.jmh",
+                    "name": "jmh-generator-bytecode",
+                    "version": "1.20",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jmh-generator-bytecode",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-generator-bytecode/1.20/jmh-generator-bytecode-1.20.jar"
+                        },
+                        {
+                            "name": "jmh-generator-bytecode",
+                            "classifier": "sources",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-generator-bytecode/1.20/jmh-generator-bytecode-1.20-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.openjdk.jmh",
+                    "name": "jmh-generator-reflection",
+                    "version": "1.20",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jmh-generator-reflection",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-generator-reflection/1.20/jmh-generator-reflection-1.20.jar"
+                        },
+                        {
+                            "name": "jmh-generator-reflection",
+                            "classifier": "sources",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-generator-reflection/1.20/jmh-generator-reflection-1.20-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.scala-lang.modules",
+                    "name": "scala-parallel-collections_2.13",
+                    "version": "1.0.0",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "scala-parallel-collections_2.13",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-parallel-collections_2.13/1.0.0/scala-parallel-collections_2.13-1.0.0.jar"
+                        },
+                        {
+                            "name": "scala-parallel-collections_2.13",
+                            "classifier": "sources",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-parallel-collections_2.13/1.0.0/scala-parallel-collections_2.13-1.0.0-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.openjdk.jmh",
+                    "name": "jmh-generator-asm",
+                    "version": "1.20",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jmh-generator-asm",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-generator-asm/1.20/jmh-generator-asm-1.20.jar"
+                        },
+                        {
+                            "name": "jmh-generator-asm",
+                            "classifier": "sources",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/openjdk/jmh/jmh-generator-asm/1.20/jmh-generator-asm-1.20-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "net.sf.jopt-simple",
+                    "name": "jopt-simple",
+                    "version": "4.6",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "jopt-simple",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/net/sf/jopt-simple/jopt-simple/4.6/jopt-simple-4.6.jar"
+                        },
+                        {
+                            "name": "jopt-simple",
+                            "classifier": "sources",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/net/sf/jopt-simple/jopt-simple/4.6/jopt-simple-4.6-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.apache.commons",
+                    "name": "commons-math3",
+                    "version": "3.2",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "commons-math3",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/apache/commons/commons-math3/3.2/commons-math3-3.2.jar"
+                        },
+                        {
+                            "name": "commons-math3",
+                            "classifier": "sources",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/apache/commons/commons-math3/3.2/commons-math3-3.2-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.ow2.asm",
+                    "name": "asm",
+                    "version": "5.0.3",
+                    "configurations": "default",
+                    "artifacts": [
+                        {
+                            "name": "asm",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm/5.0.3/asm-5.0.3.jar"
+                        },
+                        {
+                            "name": "asm",
+                            "classifier": "sources",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/ow2/asm/asm/5.0.3/asm-5.0.3-sources.jar"
+                        }
+                    ]
+                },
+                {
+                    "organization": "org.scala-lang",
+                    "name": "scala-library",
+                    "version": "2.13.4",
+                    "configurations": "optional",
+                    "artifacts": [
+                        {
+                            "name": "scala-library",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.4/scala-library-2.13.4.jar"
+                        },
+                        {
+                            "name": "scala-library",
+                            "classifier": "sources",
+                            "path": "/Users/goutam/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.4/scala-library-2.13.4-sources.jar"
+                        }
+                    ]
+                }
+            ]
+        },
+        "tags": [
+            "library"
+        ]
+    }
+}

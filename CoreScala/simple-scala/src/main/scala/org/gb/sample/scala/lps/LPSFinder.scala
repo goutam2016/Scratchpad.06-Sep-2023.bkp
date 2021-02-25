@@ -6,7 +6,7 @@ object LPSFinder {
     
     def findLPS(text: String): Array[Char] = {
         var letters = Seq[Char]()
-        val pdmLengthCmpr = Ordering.by[Palindrome, Int](_.letters.length()).reverse
+        val pdmLengthCmpr = Ordering.by[Palindrome, Int](_.letters.length).reverse
         var discvdPdms = SortedSet[Palindrome]()(pdmLengthCmpr)
 
         for (currIdx <- 0 to text.size - 1) {

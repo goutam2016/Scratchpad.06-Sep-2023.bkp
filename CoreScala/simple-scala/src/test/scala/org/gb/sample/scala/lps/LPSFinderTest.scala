@@ -1,8 +1,8 @@
 package org.gb.sample.scala.lps
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class LPSFinderTest extends FunSuite {
+class LPSFinderTest extends AnyFunSuite {
 
     test("longest palindrome sequence - 1") {
         val lps = LPSFinder.findLPS("racecar")

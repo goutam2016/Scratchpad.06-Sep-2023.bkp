@@ -1,8 +1,8 @@
 package org.gb.sample.scala.hackerrank.candies
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class SolutionTest extends FunSuite {
+class SolutionTest extends AnyFunSuite {
 
     test("calculate minimum candies - 1") {
         val ratings = Array[Int](2, 4, 2, 6, 1, 7, 8, 9, 2, 1, 3, 2)

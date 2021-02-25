@@ -1,12 +1,12 @@
 package org.gb.sample.scala.maze
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
 import scala.concurrent.Await
 
-class LargeMazeTraverserTest extends FunSuite {
+class LargeMazeTraverserTest extends AnyFunSuite {
 
     private def closedPositions(): Seq[(Int, Int)] = {
         var closedPositions = Seq.empty[(Int, Int)]

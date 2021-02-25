@@ -9,6 +9,10 @@ final class MatrixMultiplierFactory {
 	static MatrixMultiplier getSerialSquareMatrixMultiplier() {
 		return new SerialSquareMatrixMultiplier();
 	}
+	
+	static MatrixMultiplier getSerialRecursivePowerOf2SquareMatrixMultiplier() {
+		return new SerialRecursivePowerOf2SquareMatrixMultiplier();
+	}
 
 	static MatrixMultiplier getSerialRecursiveSquareMatrixMultiplier() {
 		return new SerialRecursiveSquareMatrixMultiplier();

@@ -32,8 +32,9 @@ public class BroadcastHashJoinIncomeAnalyzer extends AbstractIncomeAnalyzer {
 		JavaPairRDD<PersonName, Integer> nameVsIncomePairs = nameVsIncomeLines.map(converter::convertToCSVRecord)
 				.filter(csvRecord -> csvRecord != null).mapToPair(this::tuplizePersonNameVsIncome);
 		List<Tuple2<PersonName, Integer>> nameVsIncomeTuples = nameVsIncomePairs.top(topNum, incomeComparator);
-		Map<PersonName, Integer> nameVsIncome = nameVsIncomeTuples.stream().collect(Collectors.toMap(Tuple2::_1, Tuple2::_2));
-		
+		Map<PersonName, Integer> nameVsIncome = nameVsIncomeTuples.stream()
+				.collect(Collectors.toMap(Tuple2::_1, Tuple2::_2));
+
 		@SuppressWarnings("resource")
 		JavaSparkContext sparkContext = new JavaSparkContext(nameVsIncomePairs.context());
 		Broadcast<Map<PersonName, Integer>> bdcstNameVsIncome = sparkContext.broadcast(nameVsIncome);
@@ -45,7 +46,8 @@ public class BroadcastHashJoinIncomeAnalyzer extends AbstractIncomeAnalyzer {
 		List<Tuple2<Integer, PersonProfile>> incomeVsPersProfileTuples = incomeVsPersProfilePairs.collect();
 		Collector<Tuple2<Integer, PersonProfile>, ?, Map<Integer, List<PersonProfile>>> incomeVsPersProfilesCollector = Collectors
 				.groupingBy(Tuple2::_1, LinkedHashMap::new, Collectors.mapping(Tuple2::_2, Collectors.toList()));
-		return incomeVsPersProfileTuples.stream().collect(incomeVsPersProfilesCollector);
+		Comparator<Tuple2<Integer, PersonProfile>> incomeComparator2 = Comparator.comparing(Tuple2::_1);
+		return incomeVsPersProfileTuples.stream().sorted(incomeComparator2.reversed()).collect(incomeVsPersProfilesCollector);
 	}
 
 	private Iterator<Tuple2<Integer, PersonProfile>> mapToIncomeVsPersProfileTuples(

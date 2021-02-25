@@ -20,8 +20,8 @@ public class Main {
 			Session session = cluster.connect("mammals");
 			System.out.println("session: " + session);
 			//findPrimateByQueryBuilder(session);
-			//findPrimateByMapper(session);
-			directQueryString(session);
+			findPrimateByMapper(session);
+			//directQueryString(session);
 		} catch (Exception e) {
 			System.err.println("Exception caught at main!");
 			e.printStackTrace();
@@ -45,7 +45,7 @@ public class Main {
 	}
 
 	private static void findPrimateByMapper(Session session) {
-		final String species = "Gray mouse lemur";
+		final String species = "Hylobates lar";
 		MappingManager mappingManager = new MappingManager(session);
 		Mapper<Primate> mapper = mappingManager.mapper(Primate.class);
 		Primate primate = mapper.get(species);

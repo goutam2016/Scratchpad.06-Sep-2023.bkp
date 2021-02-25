@@ -1,5 +1,9 @@
 package org.gb.sample.algo.intro_to_algo_book.matrix_multiplication;
 
+import java.util.Arrays;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 import org.apache.log4j.Logger;
 
 class SerialRecursiveSquareMatrixMultiplier extends AbstractSquareMatrixMultiplier {
@@ -7,152 +11,157 @@ class SerialRecursiveSquareMatrixMultiplier extends AbstractSquareMatrixMultipli
 	private static final Logger LOGGER = Logger.getLogger(SerialRecursiveSquareMatrixMultiplier.class);
 
 	@Override
-	int[][] multiplySquareMatrices(final int dimension, final int[][] firstMatrix, final int[][] secondMatrix) {
-		int[][] productMatrix = new int[dimension][dimension];
-		fillProductMatrix(dimension, dimension, dimension, dimension, 0, 0, 0, 0, 0, 0, firstMatrix, secondMatrix, productMatrix);
-		return productMatrix;
+	int[][] multiplySquareMatrices(final int dimension, final int[][] firstMatrixData, final int[][] secondMatrixData) {
+		Matrix2 firstMatrix = new Matrix2(dimension, dimension, firstMatrixData);
+		Matrix2 secondMatrix = new Matrix2(dimension, dimension, secondMatrixData);
+		Matrix2 productMatrix = computeProductMatrix(firstMatrix, secondMatrix);
+		return productMatrix.getData();
 	}
 
-	private void fillProductMatrix(final int partialMatrix1RowCount, final int partialMatrix1ColumnCount, final int partialMatrix2RowCount, final int partialMatrix2ColumnCount,
-			final int firstMatrixStartRowIdx, final int firstMatrixStartColumnIdx, final int secondMatrixStartRowIdx, final int secondMatrixStartColumnIdx,
-			final int productMatrixRowIdx, final int productMatrixColumnIdx, final int[][] firstMatrix, final int[][] secondMatrix,
-			final int[][] productMatrix) {
+	private int[][] slice(final int[][] sourceData, final int sourceRowOffset, final int sourceColOffset, final int destRowCnt, final int destColCnt) {
+		Stream<int[]> slicedRows = IntStream.range(sourceRowOffset, sourceRowOffset + destRowCnt).mapToObj(i -> sourceData[i]);
+		Stream<int[]> slicedCells = slicedRows.map(row -> Arrays.copyOfRange(row, sourceColOffset, sourceColOffset + destColCnt));
+		return slicedCells.toArray(int[][]::new);
+	}
 
-		LOGGER.info(String.format(
-				"partialMatrix1RowCount: %d, partialMatrix1ColumnCount: %d, partialMatrix2RowCount: %d, partialMatrix2ColumnCount: %d, productMatrixRowIdx: %d, productMatrixColumnIdx: %d",
-				partialMatrix1RowCount, partialMatrix1ColumnCount, partialMatrix2RowCount, partialMatrix2ColumnCount, productMatrixRowIdx,
-				productMatrixColumnIdx));
-		if (partialMatrix1RowCount == 1 && partialMatrix1ColumnCount == 1 && partialMatrix2RowCount == 1 && partialMatrix2ColumnCount == 1) {
-			int firstMatrixCellValue = firstMatrix[firstMatrixStartRowIdx][firstMatrixStartColumnIdx];
-			int secondMatrixCellValue = secondMatrix[secondMatrixStartRowIdx][secondMatrixStartColumnIdx];
-			LOGGER.info(String.format("Setting value for: productMatrix[%d][%d]", productMatrixRowIdx, productMatrixColumnIdx));
-			LOGGER.info(String.format("Multiplying firstMatrix[%d][%d] = %d and secondMatrix[%d][%d] = %d", firstMatrixStartRowIdx, firstMatrixStartColumnIdx,
-					firstMatrixCellValue, secondMatrixStartRowIdx, secondMatrixStartColumnIdx, secondMatrixCellValue));
-			productMatrix[productMatrixRowIdx][productMatrixColumnIdx] += firstMatrixCellValue * secondMatrixCellValue;
-		} else {
-			int partialMatrix1HalvedRowCount = partialMatrix1RowCount / 2;
-			int partialMatrix1RemainderRowCount = partialMatrix1RowCount - partialMatrix1HalvedRowCount;
-			int partialMatrix1HalvedColumnCount = partialMatrix1ColumnCount / 2;
-			int partialMatrix1RemainderColumnCount = partialMatrix1ColumnCount - partialMatrix1HalvedColumnCount;
+	private int[][] prepareProductMatrix(final int firstMtxRowCnt, final int secondMtxColCnt, final int topPortionRowCnt, final Matrix2 partialProdMtxTopLeft,
+			final Matrix2 partialProdMtxTopRight, final Matrix2 partialProdMtxBottomLeft, final Matrix2 partialProdMtxBottomRight) {
+		final int[][] productMatrixData = new int[firstMtxRowCnt][secondMtxColCnt];
 
-			int partialMatrix2HalvedRowCount = partialMatrix2RowCount / 2;
-			int partialMatrix2RemainderRowCount = partialMatrix2RowCount - partialMatrix2HalvedRowCount;
-			int partialMatrix2HalvedColumnCount = partialMatrix2ColumnCount / 2;
-			int partialMatrix2RemainderColumnCount = partialMatrix2ColumnCount - partialMatrix2HalvedColumnCount;
-			
-			/*
-			 * Dimensions for subMatrix_1_11 = partialMatrix1RemainderRowCount x partialMatrix1RemainderColumnCount
-			 * Dimensions for subMatrix_1_12 = partialMatrix1RemainderRowCount x partialMatrix1HalvedColumnCount
-			 * Dimensions for subMatrix_1_21 = partialMatrix1HalvedRowCount x partialMatrix1RemainderColumnCount
-			 * Dimensions for subMatrix_1_22 = partialMatrix1HalvedRowCount x partialMatrix1HalvedColumnCount
-			 * 
-			 * Dimensions for subMatrix_2_11 = partialMatrix2RemainderRowCount x partialMatrix2RemainderColumnCount
-			 * Dimensions for subMatrix_2_12 = partialMatrix2RemainderRowCount x partialMatrix2HalvedColumnCount
-			 * Dimensions for subMatrix_2_21 = partialMatrix2HalvedRowCount x partialMatrix2RemainderColumnCount
-			 * Dimensions for subMatrix_2_22 = partialMatrix2HalvedRowCount x partialMatrix2HalvedColumnCount
-			 */
-			
-			int subMatrix_1_11_RowCount = (partialMatrix1RowCount == 1) ? 1 : partialMatrix1RemainderRowCount;
-			int subMatrix_1_11_ColumnCount = (partialMatrix1ColumnCount == 1) ? 1 : partialMatrix1RemainderColumnCount;
-
-			int subMatrix_1_12_RowCount = subMatrix_1_11_RowCount;
-			int subMatrix_1_12_ColumnCount = partialMatrix1ColumnCount - subMatrix_1_11_ColumnCount;
-
-			int subMatrix_1_21_RowCount = partialMatrix1RowCount - subMatrix_1_11_RowCount;
-			int subMatrix_1_21_ColumnCount = subMatrix_1_11_ColumnCount;
-
-			int subMatrix_1_22_RowCount = partialMatrix1RowCount - subMatrix_1_11_RowCount;
-			int subMatrix_1_22_ColumnCount = partialMatrix1ColumnCount - subMatrix_1_11_ColumnCount;
-
-			int subMatrix_2_11_RowCount = (partialMatrix2RowCount == 1) ? 1 : partialMatrix2RemainderRowCount;
-			int subMatrix_2_11_ColumnCount = (partialMatrix2ColumnCount == 1) ? 1 : partialMatrix2RemainderColumnCount;
-
-			int subMatrix_2_12_RowCount = subMatrix_2_11_RowCount;
-			int subMatrix_2_12_ColumnCount = partialMatrix2ColumnCount - subMatrix_2_11_ColumnCount;
-
-			int subMatrix_2_21_RowCount = partialMatrix2RowCount - subMatrix_2_11_RowCount;
-			int subMatrix_2_21_ColumnCount = subMatrix_2_11_ColumnCount;
-
-			int subMatrix_2_22_RowCount = partialMatrix2RowCount - subMatrix_2_11_RowCount;
-			int subMatrix_2_22_ColumnCount = partialMatrix2ColumnCount - subMatrix_2_11_ColumnCount;
-			
-			LOGGER.info("");
-			
-			LOGGER.info(String.format(
-					"subMatrix_1_11_RowCount: %d, subMatrix_1_11_ColumnCount: %d, subMatrix_1_12_RowCount: %d, subMatrix_1_12_ColumnCount: %d, "
-							+ "subMatrix_1_21_RowCount: %d, subMatrix_1_21_ColumnCount: %d, subMatrix_1_22_RowCount: %d, subMatrix_1_22_ColumnCount: %d",
-					subMatrix_1_11_RowCount, subMatrix_1_11_ColumnCount, subMatrix_1_12_RowCount, subMatrix_1_12_ColumnCount, subMatrix_1_21_RowCount,
-					subMatrix_1_21_ColumnCount, subMatrix_1_22_RowCount, subMatrix_1_22_ColumnCount));
-			LOGGER.info(String.format(
-					"subMatrix_2_11_RowCount: %d, subMatrix_2_11_ColumnCount: %d, subMatrix_2_12_RowCount: %d, subMatrix_2_12_ColumnCount: %d, "
-							+ "subMatrix_2_21_RowCount: %d, subMatrix_2_21_ColumnCount: %d, subMatrix_2_22_RowCount: %d, subMatrix_2_22_ColumnCount: %d",
-					subMatrix_2_11_RowCount, subMatrix_2_11_ColumnCount, subMatrix_2_12_RowCount, subMatrix_2_12_ColumnCount, subMatrix_2_21_RowCount,
-					subMatrix_2_21_ColumnCount, subMatrix_2_22_RowCount, subMatrix_2_22_ColumnCount));
-
-			LOGGER.info("");
-			/*
-			 * C(11) = A(11) * B(11) + A(12) * B(21)
-			 */
-			LOGGER.info("------C(11)------");
-			LOGGER.info("Calculating A(11) * B(11)");
-			// A(11) * B(11)
-			if (subMatrix_1_11_RowCount * subMatrix_1_11_ColumnCount != 0 && subMatrix_2_11_RowCount * subMatrix_2_11_ColumnCount != 0) {
-				LOGGER.info(String.format(
-						"Calling fillProductMatrix for A(11) * B(11), productMatrixRowIdx: %d, productMatrixColumnIdx: %d, subMatrix_1_11_RowCount: %d, subMatrix_1_11_ColumnCount: %d\n",
-						productMatrixRowIdx, productMatrixColumnIdx, subMatrix_1_11_RowCount, subMatrix_1_11_ColumnCount));
-				fillProductMatrix(subMatrix_1_11_RowCount, subMatrix_1_11_ColumnCount, subMatrix_2_11_RowCount, subMatrix_2_11_ColumnCount,
-						firstMatrixStartRowIdx, firstMatrixStartColumnIdx, secondMatrixStartRowIdx, secondMatrixStartColumnIdx, productMatrixRowIdx,
-						productMatrixColumnIdx, firstMatrix, secondMatrix, productMatrix);
-			} else {
-				LOGGER.info("One or both of A(11) and B(11) have zero dimensions, skipping calculations.");
-			}
-
-			LOGGER.info("");
-			LOGGER.info("Calculating A(12) * B(21)");
-			// A(12) * B(21)
-			if (subMatrix_1_12_RowCount * subMatrix_1_12_ColumnCount != 0 && subMatrix_2_21_RowCount * subMatrix_2_21_ColumnCount != 0) {
-				LOGGER.info(String.format(
-						"Calling fillProductMatrix for A(12) * B(21), productMatrixRowIdx: %d, productMatrixColumnIdx: %d, subMatrix_1_11_RowCount: %d, subMatrix_1_11_ColumnCount: %d\n",
-						productMatrixRowIdx, productMatrixColumnIdx, subMatrix_1_11_RowCount, subMatrix_1_11_ColumnCount));
-				fillProductMatrix(subMatrix_1_12_RowCount, subMatrix_1_12_ColumnCount, subMatrix_2_21_RowCount, subMatrix_2_21_ColumnCount,
-						firstMatrixStartRowIdx, firstMatrixStartColumnIdx + subMatrix_1_11_ColumnCount, secondMatrixStartRowIdx + subMatrix_2_11_RowCount,
-						secondMatrixStartColumnIdx, productMatrixRowIdx, productMatrixColumnIdx, firstMatrix, secondMatrix, productMatrix);
-			} else {
-				LOGGER.info("One or both of A(12) and B(21) have zero dimensions, skipping calculations.");
-			}
-
-			LOGGER.info("");
-			/*
-			 * C(12) = A(11) * B(12) + A(12) * B(22)
-			 */
-			LOGGER.info("------C(12)------");
-			LOGGER.info("Calculating A(11) * B(12)");
-			// A(11) * B(12)
-			if (subMatrix_1_11_RowCount * subMatrix_1_11_ColumnCount != 0 && subMatrix_2_12_RowCount * subMatrix_2_12_ColumnCount != 0) {
-				LOGGER.info(String.format(
-						"Calling fillProductMatrix for A(11) * B(12), productMatrixRowIdx: %d, productMatrixColumnIdx: %d, subMatrix_1_11_RowCount: %d, subMatrix_1_11_ColumnCount: %d\n",
-						productMatrixRowIdx, productMatrixColumnIdx + subMatrix_1_11_ColumnCount, subMatrix_1_11_RowCount, subMatrix_1_11_ColumnCount));
-				fillProductMatrix(subMatrix_1_11_RowCount, subMatrix_1_11_ColumnCount, subMatrix_2_12_RowCount, subMatrix_2_12_ColumnCount,
-						firstMatrixStartRowIdx, firstMatrixStartColumnIdx, secondMatrixStartRowIdx, secondMatrixStartColumnIdx + subMatrix_2_11_ColumnCount,
-						productMatrixRowIdx, productMatrixColumnIdx + subMatrix_1_11_ColumnCount, firstMatrix, secondMatrix, productMatrix);
-			} else {
-				LOGGER.info("One or both of A(11) and B(12) have zero dimensions, skipping calculations.");
-			}
-
-			LOGGER.info("");
-			LOGGER.info("Calculating A(12) * B(22)");
-			// A(12) * B(22)
-			if (subMatrix_1_12_RowCount * subMatrix_1_12_ColumnCount != 0 && subMatrix_2_22_RowCount * subMatrix_2_22_ColumnCount != 0) {
-				LOGGER.info(String.format(
-						"Calling fillProductMatrix for A(12) * B(22), productMatrixRowIdx: %d, productMatrixColumnIdx: %d, subMatrix_1_11_RowCount: %d, subMatrix_1_11_ColumnCount: %d\n",
-						productMatrixRowIdx, productMatrixColumnIdx + subMatrix_1_11_ColumnCount, subMatrix_1_11_RowCount, subMatrix_1_11_ColumnCount));
-				fillProductMatrix(subMatrix_1_12_RowCount, subMatrix_1_12_ColumnCount, subMatrix_2_22_RowCount, subMatrix_2_22_ColumnCount,
-						firstMatrixStartRowIdx, firstMatrixStartColumnIdx + subMatrix_1_11_ColumnCount, secondMatrixStartRowIdx + subMatrix_2_11_RowCount,
-						secondMatrixStartColumnIdx + subMatrix_2_11_ColumnCount, productMatrixRowIdx, productMatrixColumnIdx + subMatrix_1_11_ColumnCount,
-						firstMatrix, secondMatrix, productMatrix);
-			} else {
-				LOGGER.info("One or both of A(12) and B(22) have zero dimensions, skipping calculations.");
-			}
+		for (int destRowIdx = 0; destRowIdx < topPortionRowCnt; destRowIdx++) {
+			int[] partialProdMtxTopLeftRow = partialProdMtxTopLeft.getData()[destRowIdx];
+			int[] partialProdMtxTopRightRow = partialProdMtxTopRight.getData()[destRowIdx];
+			System.arraycopy(partialProdMtxTopLeftRow, 0, productMatrixData[destRowIdx], 0, partialProdMtxTopLeftRow.length);
+			System.arraycopy(partialProdMtxTopRightRow, 0, productMatrixData[destRowIdx], partialProdMtxTopLeftRow.length, partialProdMtxTopRightRow.length);
 		}
+
+		for (int destRowIdx = topPortionRowCnt; destRowIdx < firstMtxRowCnt; destRowIdx++) {
+			int[] partialProdMtxBottomLeftRow = partialProdMtxBottomLeft.getData()[destRowIdx - topPortionRowCnt];
+			int[] partialProdMtxBottomRightRow = partialProdMtxBottomRight.getData()[destRowIdx - topPortionRowCnt];
+			System.arraycopy(partialProdMtxBottomLeftRow, 0, productMatrixData[destRowIdx], 0, partialProdMtxBottomLeftRow.length);
+			System.arraycopy(partialProdMtxBottomRightRow, 0, productMatrixData[destRowIdx], partialProdMtxBottomLeftRow.length,
+					partialProdMtxBottomRightRow.length);
+		}
+		return productMatrixData;
+	}
+
+	private Matrix2 computeProductMatrix(Matrix2 firstMatrix, Matrix2 secondMatrix) {
+		final int firstMtxRowCnt = firstMatrix.getRowCount();
+		final int firstMtxColCnt = firstMatrix.getColumnCount();
+		final int secondMtxRowCnt = secondMatrix.getRowCount();
+		final int secondMtxColCnt = secondMatrix.getColumnCount();
+		final int[][] firstMatrixData = firstMatrix.getData();
+		final int[][] secondMatrixData = secondMatrix.getData();
+
+		if (firstMatrix.isZeroDimensional() || secondMatrix.isZeroDimensional()) {
+			return new Matrix2(0, 0);
+		} else if (firstMtxRowCnt == 1 && firstMtxColCnt == 1 && secondMtxRowCnt == 1 && secondMtxColCnt == 1) {
+			int firstMtxVal = firstMatrixData[0][0];
+			int secondMtxVal = secondMatrixData[0][0];
+			int[][] prodMtxData = { { firstMtxVal * secondMtxVal } };
+			return new Matrix2(1, 1, prodMtxData);
+		}
+
+		final int firstMtxHalvedRowCnt = firstMtxRowCnt / 2;
+		final int firstMtxRemainderRowCnt = firstMtxRowCnt - firstMtxHalvedRowCnt;
+		final int firstMtxHalvedColCnt = firstMtxColCnt / 2;
+		final int firstMtxRemainderColCnt = firstMtxColCnt - firstMtxHalvedColCnt;
+
+		final int secondMtxHalvedRowCnt = secondMtxRowCnt / 2;
+		final int secondMtxRemainderRowCnt = secondMtxRowCnt - secondMtxHalvedRowCnt;
+		final int secondMtxHalvedColCnt = secondMtxColCnt / 2;
+		final int secondMtxRemainderColCnt = secondMtxColCnt - secondMtxHalvedColCnt;
+
+		final int firstMtxTopLeftQtrRowCnt = firstMtxRemainderRowCnt;
+		final int firstMtxTopLeftQtrColCnt = firstMtxRemainderColCnt;
+		final int firstMtxTopRightQtrRowCnt = firstMtxTopLeftQtrRowCnt;
+		final int firstMtxTopRightQtrColCnt = firstMtxColCnt - firstMtxTopLeftQtrColCnt;
+		final int firstMtxBottomLeftQtrRowCnt = firstMtxRowCnt - firstMtxTopLeftQtrRowCnt;
+		final int firstMtxBottomLeftQtrColCnt = firstMtxTopLeftQtrColCnt;
+		final int firstMtxBottomRightQtrRowCnt = firstMtxBottomLeftQtrRowCnt;
+		final int firstMtxBottomRightQtrColCnt = firstMtxTopRightQtrColCnt;
+
+		final int secondMtxTopLeftQtrRowCnt = secondMtxRemainderRowCnt;
+		final int secondMtxTopLeftQtrColCnt = secondMtxRemainderColCnt;
+		final int secondMtxTopRightQtrRowCnt = secondMtxTopLeftQtrRowCnt;
+		final int secondMtxTopRightQtrColCnt = secondMtxColCnt - secondMtxTopLeftQtrColCnt;
+		final int secondMtxBottomLeftQtrRowCnt = secondMtxRowCnt - secondMtxTopLeftQtrRowCnt;
+		final int secondMtxBottomLeftQtrColCnt = secondMtxTopLeftQtrColCnt;
+		final int secondMtxBottomRightQtrRowCnt = secondMtxBottomLeftQtrRowCnt;
+		final int secondMtxBottomRightQtrColCnt = secondMtxTopRightQtrColCnt;
+
+		final int[][] firstMtxTopLeftQtrMtxData = slice(firstMatrixData, 0, 0, firstMtxTopLeftQtrRowCnt, firstMtxTopLeftQtrColCnt);
+		final int[][] firstMtxTopRightQtrMtxData = slice(firstMatrixData, 0, firstMtxTopLeftQtrColCnt, firstMtxTopRightQtrRowCnt, firstMtxTopRightQtrColCnt);
+		final int[][] firstMtxBottomLeftQtrMtxData = slice(firstMatrixData, firstMtxTopLeftQtrRowCnt, 0, firstMtxBottomLeftQtrRowCnt,
+				firstMtxBottomLeftQtrColCnt);
+		final int[][] firstMtxBottomRightQtrMtxData = slice(firstMatrixData, firstMtxTopLeftQtrRowCnt, firstMtxTopLeftQtrColCnt, firstMtxBottomRightQtrRowCnt,
+				firstMtxBottomRightQtrColCnt);
+
+		final int[][] secondMtxTopLeftQtrMtxData = slice(secondMatrixData, 0, 0, secondMtxTopLeftQtrRowCnt, secondMtxTopLeftQtrColCnt);
+		final int[][] secondMtxTopRightQtrMtxData = slice(secondMatrixData, 0, secondMtxTopLeftQtrColCnt, secondMtxTopRightQtrRowCnt,
+				secondMtxTopRightQtrColCnt);
+		final int[][] secondMtxBottomLeftQtrMtxData = slice(secondMatrixData, secondMtxTopLeftQtrRowCnt, 0, secondMtxBottomLeftQtrRowCnt,
+				secondMtxBottomLeftQtrColCnt);
+		final int[][] secondMtxBottomRightQtrMtxData = slice(secondMatrixData, secondMtxTopLeftQtrRowCnt, secondMtxTopLeftQtrColCnt,
+				secondMtxBottomRightQtrRowCnt, secondMtxBottomRightQtrColCnt);
+
+		final Matrix2 firstMtxTopLeftQtrMtx = new Matrix2(firstMtxTopLeftQtrRowCnt, firstMtxTopLeftQtrColCnt, firstMtxTopLeftQtrMtxData);
+		final Matrix2 firstMtxTopRightQtrMtx = new Matrix2(firstMtxTopRightQtrRowCnt, firstMtxTopRightQtrColCnt, firstMtxTopRightQtrMtxData);
+		final Matrix2 firstMtxBottomLeftQtrMtx = new Matrix2(firstMtxBottomLeftQtrRowCnt, firstMtxBottomLeftQtrColCnt, firstMtxBottomLeftQtrMtxData);
+		final Matrix2 firstMtxBottomRightQtrMtx = new Matrix2(firstMtxBottomRightQtrRowCnt, firstMtxBottomRightQtrColCnt, firstMtxBottomRightQtrMtxData);
+
+		final Matrix2 secondMtxTopLeftQtrMtx = new Matrix2(secondMtxTopLeftQtrRowCnt, secondMtxTopLeftQtrColCnt, secondMtxTopLeftQtrMtxData);
+		final Matrix2 secondMtxTopRightQtrMtx = new Matrix2(secondMtxTopRightQtrRowCnt, secondMtxTopRightQtrColCnt, secondMtxTopRightQtrMtxData);
+		final Matrix2 secondMtxBottomLeftQtrMtx = new Matrix2(secondMtxBottomLeftQtrRowCnt, secondMtxBottomLeftQtrColCnt, secondMtxBottomLeftQtrMtxData);
+		final Matrix2 secondMtxBottomRightQtrMtx = new Matrix2(secondMtxBottomRightQtrRowCnt, secondMtxBottomRightQtrColCnt, secondMtxBottomRightQtrMtxData);
+
+		final Matrix2 partialProdMtxTopLeft = new Matrix2(firstMtxTopLeftQtrRowCnt, secondMtxTopLeftQtrColCnt);
+		final Matrix2 partialProdMtxTopLeft1 = computeProductMatrix(firstMtxTopLeftQtrMtx, secondMtxTopLeftQtrMtx);
+		final Matrix2 partialProdMtxTopLeft2 = computeProductMatrix(firstMtxTopRightQtrMtx, secondMtxBottomLeftQtrMtx);
+
+		if (!partialProdMtxTopLeft1.isZeroDimensional()) {
+			partialProdMtxTopLeft.addData(firstMtxTopRightQtrRowCnt, secondMtxBottomLeftQtrColCnt, partialProdMtxTopLeft1.getData());
+		}
+		if (!partialProdMtxTopLeft2.isZeroDimensional()) {
+			partialProdMtxTopLeft.addData(firstMtxTopRightQtrRowCnt, secondMtxBottomLeftQtrColCnt, partialProdMtxTopLeft2.getData());
+		}
+
+		final Matrix2 partialProdMtxTopRight = new Matrix2(firstMtxTopLeftQtrRowCnt, secondMtxTopRightQtrColCnt);
+		final Matrix2 partialProdMtxTopRight1 = computeProductMatrix(firstMtxTopLeftQtrMtx, secondMtxTopRightQtrMtx);
+		final Matrix2 partialProdMtxTopRight2 = computeProductMatrix(firstMtxTopRightQtrMtx, secondMtxBottomRightQtrMtx);
+
+		if (!partialProdMtxTopRight1.isZeroDimensional()) {
+			partialProdMtxTopRight.addData(firstMtxTopRightQtrRowCnt, secondMtxBottomRightQtrColCnt, partialProdMtxTopRight1.getData());
+		}
+		if (!partialProdMtxTopRight2.isZeroDimensional()) {
+			partialProdMtxTopRight.addData(firstMtxTopRightQtrRowCnt, secondMtxBottomRightQtrColCnt, partialProdMtxTopRight2.getData());
+		}
+
+		final Matrix2 partialProdMtxBottomLeft = new Matrix2(firstMtxBottomLeftQtrRowCnt, secondMtxTopLeftQtrColCnt);
+		final Matrix2 partialProdMtxBottomLeft1 = computeProductMatrix(firstMtxBottomLeftQtrMtx, secondMtxTopLeftQtrMtx);
+		final Matrix2 partialProdMtxBottomLeft2 = computeProductMatrix(firstMtxBottomRightQtrMtx, secondMtxBottomLeftQtrMtx);
+
+		if (!partialProdMtxBottomLeft1.isZeroDimensional()) {
+			partialProdMtxBottomLeft.addData(firstMtxBottomRightQtrRowCnt, secondMtxBottomLeftQtrColCnt, partialProdMtxBottomLeft1.getData());
+		}
+		if (!partialProdMtxBottomLeft2.isZeroDimensional()) {
+			partialProdMtxBottomLeft.addData(firstMtxBottomRightQtrRowCnt, secondMtxBottomLeftQtrColCnt, partialProdMtxBottomLeft2.getData());
+		}
+
+		final Matrix2 partialProdMtxBottomRight = new Matrix2(firstMtxBottomLeftQtrRowCnt, secondMtxTopRightQtrColCnt);
+		final Matrix2 partialProdMtxBottomRight1 = computeProductMatrix(firstMtxBottomLeftQtrMtx, secondMtxTopRightQtrMtx);
+		final Matrix2 partialProdMtxBottomRight2 = computeProductMatrix(firstMtxBottomRightQtrMtx, secondMtxBottomRightQtrMtx);
+
+		if (!partialProdMtxBottomRight1.isZeroDimensional()) {
+			partialProdMtxBottomRight.addData(firstMtxBottomRightQtrRowCnt, secondMtxBottomRightQtrColCnt, partialProdMtxBottomRight1.getData());
+		}
+		if (!partialProdMtxBottomRight2.isZeroDimensional()) {
+			partialProdMtxBottomRight.addData(firstMtxBottomRightQtrRowCnt, secondMtxBottomRightQtrColCnt, partialProdMtxBottomRight2.getData());
+		}
+
+		final int[][] productMatrixData = prepareProductMatrix(firstMtxRowCnt, secondMtxColCnt, firstMtxTopLeftQtrRowCnt, partialProdMtxTopLeft,
+				partialProdMtxTopRight, partialProdMtxBottomLeft, partialProdMtxBottomRight);
+
+		return new Matrix2(firstMtxRowCnt, secondMtxColCnt, productMatrixData);
 	}
 }

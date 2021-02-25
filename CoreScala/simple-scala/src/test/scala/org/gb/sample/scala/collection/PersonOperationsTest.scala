@@ -1,13 +1,13 @@
 package org.gb.sample.scala.collection
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import scala.collection.immutable.IndexedSeq
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.math.BigDecimal
 
-class PersonOperationsTest extends FunSuite {
+class PersonOperationsTest extends AnyFunSuite {
     val dateFormatter: DateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
     test("people grouped by mother tongue") {
@@ -33,13 +33,13 @@ class PersonOperationsTest extends FunSuite {
         val maxSalaryOfFin = maxSalaryPerDept.get("Finance").get
         val maxSalaryOfOffMgmt = maxSalaryPerDept.get("Office Management").get
         val maxSalaryOfIT = maxSalaryPerDept.get("IT").get
-        assertResult(70000)(maxSalaryOfHR.intValue())
-        assertResult(80000)(maxSalaryOfDev.intValue())
-        assertResult(70000)(maxSalaryOfOps.intValue())
-        assertResult(65000)(maxSalaryOfMktg.intValue())
-        assertResult(65000)(maxSalaryOfFin.intValue())
-        assertResult(52000)(maxSalaryOfOffMgmt.intValue())
-        assertResult(46000)(maxSalaryOfIT.intValue())
+        assertResult(70000)(maxSalaryOfHR.intValue)
+        assertResult(80000)(maxSalaryOfDev.intValue)
+        assertResult(70000)(maxSalaryOfOps.intValue)
+        assertResult(65000)(maxSalaryOfMktg.intValue)
+        assertResult(65000)(maxSalaryOfFin.intValue)
+        assertResult(52000)(maxSalaryOfOffMgmt.intValue)
+        assertResult(46000)(maxSalaryOfIT.intValue)
     }
 
     test("employee name with maximum salary per department") {
@@ -79,13 +79,13 @@ class PersonOperationsTest extends FunSuite {
     test("average salary per department") {
         val employees = loadEmployees()
         val avgSalaryPerDept = PersonOperations.averageSalaryPerDepartment(employees)
-        assertResult(70000)(avgSalaryPerDept.get("HR").get.intValue())
-        assertResult(52750)(avgSalaryPerDept.get("Development").get.intValue())
-        assertResult(54000)(avgSalaryPerDept.get("Operations").get.intValue())
-        assertResult(57000)(avgSalaryPerDept.get("Marketing").get.intValue())
-        assertResult(65000)(avgSalaryPerDept.get("Finance").get.intValue())
-        assertResult(52000)(avgSalaryPerDept.get("Office Management").get.intValue())
-        assertResult(45500)(avgSalaryPerDept.get("IT").get.intValue())
+        assertResult(70000)(avgSalaryPerDept.get("HR").get.intValue)
+        assertResult(52750)(avgSalaryPerDept.get("Development").get.intValue)
+        assertResult(54000)(avgSalaryPerDept.get("Operations").get.intValue)
+        assertResult(57000)(avgSalaryPerDept.get("Marketing").get.intValue)
+        assertResult(65000)(avgSalaryPerDept.get("Finance").get.intValue)
+        assertResult(52000)(avgSalaryPerDept.get("Office Management").get.intValue)
+        assertResult(45500)(avgSalaryPerDept.get("IT").get.intValue)
     }
 
     private def loadEmployees(): IndexedSeq[Employee] = {

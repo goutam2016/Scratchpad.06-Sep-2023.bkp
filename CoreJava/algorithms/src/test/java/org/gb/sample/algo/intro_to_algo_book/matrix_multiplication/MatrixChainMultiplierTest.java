@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class MatrixChainMultiplierTest {
@@ -97,6 +98,13 @@ public class MatrixChainMultiplierTest {
 	@Test
 	public void computeOptimalOrder_SerialRecursiveMultiplier_3Matrices() {
 		MatrixChainMultiplier matrixChainMultiplier = MatrixChainMultiplierFactory.getSerialRecursiveMatrixChainMultiplier();
+		computeOptimalOrder_3Matrices(matrixChainMultiplier);
+	}
+	
+	@Ignore
+	@Test
+	public void computeOptimalOrder_SerialTailRecursiveMultiplier_3Matrices() {
+		MatrixChainMultiplier matrixChainMultiplier = MatrixChainMultiplierFactory.getSerialTailRecursiveMatrixChainMultiplier();
 		computeOptimalOrder_3Matrices(matrixChainMultiplier);
 	}
 

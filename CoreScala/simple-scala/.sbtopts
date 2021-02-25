@@ -13,15 +13,15 @@
 
 # Path to global settings/plugins directory (default: ~/.sbt)
 #
--sbt-dir /WorkSW/BuildTool/Sbt
+-sbt-dir /opt/WorkSW/BuildTool/Sbt
 
 # Path to shared boot directory (default: ~/.sbt/boot in 0.11 series)
 #
--sbt-boot /WorkSW/BuildTool/Sbt/boot
+-sbt-boot /opt/WorkSW/BuildTool/Sbt/boot
 
 # Path to local Ivy repository (default: ~/.ivy2)
 #
--ivy /WorkSW/BuildTool/Sbt/ivy2
+-ivy /opt/WorkSW/BuildTool/Sbt/ivy2
 
 # set memory options
 #
@@ -36,7 +36,7 @@
 #-offline
 
 # Sets the SBT version to use.
--sbt-version  1.3.9
+-sbt-version  1.4.6
 
 # Scala version (default: latest release)
 #
@@ -46,4 +46,3 @@
 # java version (default: java from PATH, currently $(java -version |& grep version))
 #
 #-java-home <path>
-

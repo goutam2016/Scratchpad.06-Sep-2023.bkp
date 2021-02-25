@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.CountDownLatch
 import scala.annotation.tailrec
 import scala.collection.parallel.ParSeq
+import scala.collection.parallel.CollectionConverters._
 
 class ParallelBFSTraverser(val totalRows: Int, val totalColumns: Int, val maze: Map[Coordinate, Status]) extends Traverser {
 

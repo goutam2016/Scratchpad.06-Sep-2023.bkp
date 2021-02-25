@@ -30,7 +30,7 @@ public class YearlyTopIncomesMain {
 					"2 - Partition and cache the name vs profile dataset then join with name vs income dataset for each year, then find the top incomes.\n");
 			console.printf(
 					"3 - Partition and cache the name vs profile dataset, find the top incomes from name vs income for each year, then do a broadcast hash join.\n");
-			String consInput = console.readLine("Select one of the above numbers: ");
+			String consInput = console.readLine("Enter one of the above numbers: ");
 			int incomeAnalysisStgy = 0;
 
 			try {
@@ -60,6 +60,8 @@ public class YearlyTopIncomesMain {
 			Comparator<Entry<Integer, String>> yearCmptr = Comparator.comparing(Entry::getKey);
 			SortedSet<Entry<Integer, String>> sortedYearVsFilePathEntries = new TreeSet<>(yearCmptr);
 			sortedYearVsFilePathEntries.addAll(yearVsFilePathEntries);
+			
+			/* sortedYearVsFilePathEntries now holds year-against-(name-vs-income file path) entries, ordered from earliest to latest year. */
 			
 			for (Entry<Integer, String> yearVsFilePathEntry : sortedYearVsFilePathEntries) {
 				JavaRDD<String> nameVsIncomeLines = sc.textFile(yearVsFilePathEntry.getValue());

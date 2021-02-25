@@ -36,7 +36,7 @@ public class SparkSQLTripStatsPerTimeBandMain {
 		Map<TimeBand, TripStats> tripStatsPerTimeBand = tripAnalyzer.getTripStatsPerTimeBand(timeBands);
 
 		tripStatsPerTimeBand.forEach(SparkSQLTripStatsPerTimeBandMain::printTripStatsPerTimeBand);
-		session.close();
+		//session.close();
 	}
 
 	private static void printTripStatsPerTimeBand(TimeBand timeBand, TripStats tripStats) {
