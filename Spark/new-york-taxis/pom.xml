@@ -10,7 +10,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<spark.version>2.0.2</spark.version>
+		<spark.version>2.2.3</spark.version>
 		<datastax.cassandra.version>3.6.0</datastax.cassandra.version>
 		<spark.cassandra.connector.version>2.0.10</spark.cassandra.connector.version>
 		<commons.codec.version>1.11</commons.codec.version>
