@@ -3,7 +3,7 @@ package org.gb.sample.algo.intro_to_algo_book.matrix_multiplication;
 import java.util.List;
 import org.javatuples.Quartet;
 
-class SerialRecursiveArrayMemoizedMatrixChainMultiplier extends AbstractMatrixChainMultiplier {
+class SerialRecursiveArrayMemoizedMCMOptimiser extends AbstractMatrixChainMultiplicationOptimiser {
 
 	private Quartet<Integer, Integer, Matrix, Matrix> computeOptimalSplit(final List<Matrix> matrixChain, final int sgmtBeginIdx, final int sgmtEndIdx,
 			final Matrix[][] cachedOptimalProducts, int minMultiplyCount) {

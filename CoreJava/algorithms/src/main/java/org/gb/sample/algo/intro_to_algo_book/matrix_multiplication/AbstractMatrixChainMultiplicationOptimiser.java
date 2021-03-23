@@ -2,7 +2,7 @@ package org.gb.sample.algo.intro_to_algo_book.matrix_multiplication;
 
 import java.util.List;
 
-abstract class AbstractMatrixChainMultiplier implements MatrixChainMultiplier {
+abstract class AbstractMatrixChainMultiplicationOptimiser implements MatrixChainMultiplicationOptimiser {
 
 	private int verifyCompatibility(List<Matrix> matrixChain) {
 		int matrixCount = matrixChain.size();

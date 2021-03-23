@@ -2,19 +2,31 @@ package org.gb.sample.algo.permutation;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.gb.sample.algo.JMHOptionsBuilder;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
+@Warmup(iterations = 3)
+@Measurement(iterations = 3)
+@Fork(1)
+@BenchmarkMode(Mode.AverageTime)
 public class PermutationsBenchmark {
 
 	private static final Logger LOGGER = Logger.getLogger(PermutationsBenchmark.class);
+	
+	private static final String JFR_RECORDING_SWITCH_PROPTY = "JFRRecordingOn";
 
 	/*@BenchmarkMode(Mode.AverageTime)
 	@Benchmark
@@ -37,7 +49,6 @@ public class PermutationsBenchmark {
 		Permutations.computePermutations(characters);
 	}
 */	
-	@BenchmarkMode(Mode.AverageTime)
 	@Benchmark
 	public void computePermutationsWithCaching() {
 		List<Character> characters = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r');
@@ -51,7 +62,6 @@ public class PermutationsBenchmark {
 		Permutations.computePermutationsFJ(characters);
 	}
 */	
-	@BenchmarkMode(Mode.AverageTime)
 	@Benchmark
 	public void computePermutationsFJWithCaching() throws InterruptedException {
 		List<Character> characters = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r');
@@ -96,7 +106,18 @@ public class PermutationsBenchmark {
 	}*/
 
 	public static void main(String[] args) throws RunnerException {
-		Options opt = new OptionsBuilder().include(PermutationsBenchmark.class.getSimpleName()).forks(1).build();
+		ChainedOptionsBuilder optBuilder = new OptionsBuilder().include(PermutationsBenchmark.class.getSimpleName());
+		
+		if (args.length > 0) {
+			Map<String, String> argNameVsValue = JMHOptionsBuilder.parseCmdLineArgs(args);
+			String jfrRecordingOn = argNameVsValue.getOrDefault(JFR_RECORDING_SWITCH_PROPTY, "false");
+			
+			if(Boolean.parseBoolean(jfrRecordingOn)) {
+				optBuilder = JMHOptionsBuilder.addJFRProfiler(argNameVsValue, optBuilder, PermutationsBenchmark.class.getSimpleName());
+			}
+		}
+
+		Options opt = optBuilder.build();
 		new Runner(opt).run();
 	}
 }

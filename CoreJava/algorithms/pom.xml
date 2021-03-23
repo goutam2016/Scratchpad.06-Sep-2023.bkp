@@ -84,9 +84,9 @@
 					<arguments>
 						<argument>-classpath</argument>
 						<classpath />
-
 						<!-- The value of mainClass will need to be passed from Maven command-line. -->
 						<argument>${mainClass}</argument>
+						<argument>${mainClassArgs}</argument>
 					</arguments>
 				</configuration>
 			</plugin>

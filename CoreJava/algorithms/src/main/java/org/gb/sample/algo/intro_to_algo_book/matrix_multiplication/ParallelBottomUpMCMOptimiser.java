@@ -1,10 +1,13 @@
 package org.gb.sample.algo.intro_to_algo_book.matrix_multiplication;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.javatuples.Pair;
 
-class SerialBottomUpMatrixChainMultiplier extends AbstractMatrixChainMultiplier {
+class ParallelBottomUpMCMOptimiser extends AbstractMatrixChainMultiplicationOptimiser {
 
 	private void initOptimalProductArr(final List<Matrix> matrixChain, final int matrixCount, final Matrix[][] optimalProductArr) {
 		for (int chainIdx = 0; chainIdx < matrixCount; chainIdx++) {
@@ -12,22 +15,25 @@ class SerialBottomUpMatrixChainMultiplier extends AbstractMatrixChainMultiplier 
 		}
 	}
 
-	private Pair<Integer, Integer> computeOptimalSplit(final List<Matrix> matrixChain, final int sgmtBeginIdx, final int sgmtEndIdx,
-			final int[][] minMultiplyCountArr, int minMultiplyCount) {
-		int optimalSplitIdx = sgmtBeginIdx;
-		for (int splitIdx = sgmtBeginIdx; splitIdx < sgmtEndIdx; splitIdx++) {
-			Matrix sgmtHead = matrixChain.get(sgmtBeginIdx);
-			Matrix sgmtSplit = matrixChain.get(splitIdx);
-			Matrix sgmtTail = matrixChain.get(sgmtEndIdx);
-			int subsgmtsMultiplyCount = sgmtHead.getRowCount() * sgmtSplit.getColumnCount() * sgmtTail.getColumnCount();
-			int cumltvMultiplyCount = minMultiplyCountArr[sgmtBeginIdx][splitIdx] + minMultiplyCountArr[splitIdx + 1][sgmtEndIdx] + subsgmtsMultiplyCount;
+	private Pair<Integer, Integer> computeCumltvMultiplyCount(final List<Matrix> matrixChain, final int sgmtBeginIdx, final int sgmtEndIdx, final int splitIdx,
+			final int[][] minMultiplyCountArr) {
+		Matrix sgmtHead = matrixChain.get(sgmtBeginIdx);
+		Matrix sgmtSplit = matrixChain.get(splitIdx);
+		Matrix sgmtTail = matrixChain.get(sgmtEndIdx);
 
-			if (cumltvMultiplyCount < minMultiplyCount) {
-				optimalSplitIdx = splitIdx;
-				minMultiplyCount = cumltvMultiplyCount;
-			}
-		}
-		return Pair.with(optimalSplitIdx, minMultiplyCount);
+		int subsgmtsMultiplyCount = sgmtHead.getRowCount() * sgmtSplit.getColumnCount() * sgmtTail.getColumnCount();
+		int cumltvMultiplyCount = minMultiplyCountArr[sgmtBeginIdx][splitIdx] + minMultiplyCountArr[splitIdx + 1][sgmtEndIdx] + subsgmtsMultiplyCount;
+
+		return Pair.with(splitIdx, cumltvMultiplyCount);
+	}
+
+	private Pair<Integer, Integer> computeOptimalSplit(final List<Matrix> matrixChain, final int sgmtBeginIdx, final int sgmtEndIdx,
+			final int[][] minMultiplyCountArr) {
+		Optional<Pair<Integer, Integer>> optimalSplit = IntStream.range(sgmtBeginIdx, sgmtEndIdx).parallel()
+				.mapToObj(splitIdx -> computeCumltvMultiplyCount(matrixChain, sgmtBeginIdx, sgmtEndIdx, splitIdx, minMultiplyCountArr))
+				.min(Comparator.comparingInt(Pair::getValue1));
+
+		return optimalSplit.orElse(Pair.with(sgmtBeginIdx, Integer.MAX_VALUE));
 	}
 
 	@Override
@@ -40,7 +46,7 @@ class SerialBottomUpMatrixChainMultiplier extends AbstractMatrixChainMultiplier 
 		for (int segmentLength = 2; segmentLength <= matrixCount; segmentLength++) {
 			for (int sgmtBeginIdx = 0; sgmtBeginIdx <= (matrixCount - segmentLength); sgmtBeginIdx++) {
 				int sgmtEndIdx = sgmtBeginIdx + segmentLength - 1;
-				Pair<Integer, Integer> optimalSplitResult = computeOptimalSplit(matrixChain, sgmtBeginIdx, sgmtEndIdx, minMultiplyCountArr, Integer.MAX_VALUE);
+				Pair<Integer, Integer> optimalSplitResult = computeOptimalSplit(matrixChain, sgmtBeginIdx, sgmtEndIdx, minMultiplyCountArr);
 
 				int optimalSplitIdx = optimalSplitResult.getValue0().intValue();
 				int minMultiplyCount = optimalSplitResult.getValue1().intValue();

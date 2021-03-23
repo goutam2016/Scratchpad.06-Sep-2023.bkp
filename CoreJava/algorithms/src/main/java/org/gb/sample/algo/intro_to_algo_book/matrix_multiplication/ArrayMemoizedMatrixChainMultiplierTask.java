@@ -39,6 +39,12 @@ class ArrayMemoizedMatrixChainMultiplierTask extends RecursiveTask<Matrix> {
 
 			Matrix leftSubchainProduct = leftSubchainMultiplierTask.join();
 			Matrix rightSubchainProduct = rightSubchainMultiplierTask.join();
+
+//			ForkJoinTask<Matrix> leftSubchainMultiplierTask = new ArrayMemoizedMatrixChainMultiplierTask(matrixChain, sgmtBeginIdx, splitIdx,
+//					cachedOptimalProducts).fork();
+//			Matrix rightSubchainProduct = new ArrayMemoizedMatrixChainMultiplierTask(matrixChain, splitIdx + 1, sgmtEndIdx, cachedOptimalProducts).compute();
+//			Matrix leftSubchainProduct = leftSubchainMultiplierTask.join();
+			
 			int subchainsMultiplyCount = leftSubchainHead.getRowCount() * leftSubchainTail.getColumnCount() * rightSubchainTail.getColumnCount();
 			int cumltvMultiplyCount = leftSubchainProduct.getCumulativeMultiplyCount() + rightSubchainProduct.getCumulativeMultiplyCount()
 					+ subchainsMultiplyCount;

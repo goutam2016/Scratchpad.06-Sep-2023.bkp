@@ -3,9 +3,9 @@ package org.gb.sample.algo.intro_to_algo_book.matrix_multiplication;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 
-class FJArrayMemoizedMatrixChainMultiplier extends AbstractFJMatrixChainMultiplier {
+class FJArrayMemoizedMCMOptimiser extends AbstractFJMatrixChainMultiplicationOptimiser {
 
-	FJArrayMemoizedMatrixChainMultiplier(int parallelism) {
+	FJArrayMemoizedMCMOptimiser(int parallelism) {
 		super(parallelism);
 	}
 

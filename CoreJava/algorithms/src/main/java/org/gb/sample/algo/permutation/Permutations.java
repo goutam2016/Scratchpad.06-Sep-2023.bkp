@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 public class Permutations {
 	
+	private static final ForkJoinPool forkJoinPool = new ForkJoinPool(4);
+	
 	public static Set<String> permute(List<Character> characters) {
 		Set<String> permutations = new TreeSet<>();
 
@@ -173,20 +175,20 @@ public class Permutations {
 	}
 
 	public static long computePermutationsFJ(List<Character> characters) throws InterruptedException {
-		ForkJoinPool forkJoinPool = new ForkJoinPool(8);
+//		ForkJoinPool forkJoinPool = new ForkJoinPool(8);
 		ForkJoinTask<Long> permutationComputer = new PermutationComputingTask(characters);
 		Long numOfPermutations = forkJoinPool.invoke(permutationComputer);
-		forkJoinPool.shutdown();
-		forkJoinPool.awaitTermination(5, TimeUnit.SECONDS);
+//		forkJoinPool.shutdown();
+//		forkJoinPool.awaitTermination(5, TimeUnit.SECONDS);
 		return numOfPermutations;
 	}
 	
 	public static long computePermutationsFJWithCaching(List<Character> characters) throws InterruptedException {
-		ForkJoinPool forkJoinPool = new ForkJoinPool(8);
+//		ForkJoinPool forkJoinPool = new ForkJoinPool(8);
 		ForkJoinTask<Long> permutationComputer = new CacheblPermutComputeTask(characters, new ConcurrentHashMap<>());
 		Long numOfPermutations = forkJoinPool.invoke(permutationComputer);
-		forkJoinPool.shutdown();
-		forkJoinPool.awaitTermination(5, TimeUnit.SECONDS);
+//		forkJoinPool.shutdown();
+//		forkJoinPool.awaitTermination(5, TimeUnit.SECONDS);
 		return numOfPermutations;
 	}
 

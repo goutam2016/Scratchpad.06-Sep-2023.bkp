@@ -2,23 +2,40 @@ package org.gb.sample.algo.intro_to_algo_book.matrix_multiplication;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.javatuples.Quartet;
 
 class MapMemoizedMatrixChainMultiplierTask extends RecursiveTask<Matrix> {
 
 	private static final long serialVersionUID = -1069551865224474387L;
+	private static final Logger LOGGER = Logger.getLogger(MapMemoizedMatrixChainMultiplierTask.class);
 
 	private final List<Matrix> matrixChain;
 	private final Map<String, Matrix> cachedOptimalProducts;
+	final Map<String, Integer> chainProductComputeCount;
+	final Map<String, Integer> chainProductCacheHitCount;
 
 	MapMemoizedMatrixChainMultiplierTask(List<Matrix> matrixChain, Map<String, Matrix> cachedOptimalProducts) {
 		super();
 		this.matrixChain = matrixChain;
 		this.cachedOptimalProducts = cachedOptimalProducts;
+		this.chainProductComputeCount = new ConcurrentHashMap<>();
+		this.chainProductCacheHitCount = new ConcurrentHashMap<>();
+	}
+
+	MapMemoizedMatrixChainMultiplierTask(List<Matrix> matrixChain, Map<String, Matrix> cachedOptimalProducts, Map<String, Integer> chainProductComputeCount,
+			Map<String, Integer> chainProductCacheHitCount) {
+		super();
+		this.matrixChain = matrixChain;
+		this.cachedOptimalProducts = cachedOptimalProducts;
+		this.chainProductComputeCount = chainProductComputeCount;
+		this.chainProductCacheHitCount = chainProductCacheHitCount;
 	}
 
 	private Quartet<Integer, Integer, Matrix, Matrix> computeOptimalSplit(int minMultiplyCount) {
@@ -33,8 +50,10 @@ class MapMemoizedMatrixChainMultiplierTask extends RecursiveTask<Matrix> {
 			Matrix leftSubchainTail = matrixChain.get(splitIdx);
 			Matrix rightSubchainTail = matrixChain.get(matrixCount - 1);
 
-			ForkJoinTask<Matrix> leftSubchainMultiplierTask = new MapMemoizedMatrixChainMultiplierTask(leftSubchain, cachedOptimalProducts).fork();
-			ForkJoinTask<Matrix> rightSubchainMultiplierTask = new MapMemoizedMatrixChainMultiplierTask(rightSubchain, cachedOptimalProducts).fork();
+			ForkJoinTask<Matrix> leftSubchainMultiplierTask = new MapMemoizedMatrixChainMultiplierTask(leftSubchain, cachedOptimalProducts,
+					chainProductComputeCount, chainProductCacheHitCount).fork();
+			ForkJoinTask<Matrix> rightSubchainMultiplierTask = new MapMemoizedMatrixChainMultiplierTask(rightSubchain, cachedOptimalProducts,
+					chainProductComputeCount, chainProductCacheHitCount).fork();
 
 			Matrix leftSubchainProduct = leftSubchainMultiplierTask.join();
 			Matrix rightSubchainProduct = rightSubchainMultiplierTask.join();
@@ -60,10 +79,17 @@ class MapMemoizedMatrixChainMultiplierTask extends RecursiveTask<Matrix> {
 			optimalProduct = matrixChain.get(0);
 		} else {
 			String chainProductName = matrixChain.stream().map(Matrix::getSimpleProductName).collect(Collectors.joining());
-
+			LOGGER.debug(String.format("Looking up chainProductName: %s in cache.", chainProductName));
 			if (cachedOptimalProducts.containsKey(chainProductName)) {
+				BiFunction<String, Integer, Integer> cacheHitCounter = (String productName, Integer cacheHitCount) -> (cacheHitCount == null) ? 1
+						: cacheHitCount + 1;
+				chainProductCacheHitCount.compute(chainProductName, cacheHitCounter);
 				optimalProduct = cachedOptimalProducts.get(chainProductName);
 			} else if (matrixCount == 2) {
+				LOGGER.debug(String.format("Not found chainProductName: %s in cache, computing for %d matrices.", chainProductName, 2));
+				BiFunction<String, Integer, Integer> incrementCounter = (String productName, Integer computeCount) -> (computeCount == null) ? 1
+						: computeCount + 1;
+				chainProductComputeCount.compute(chainProductName, incrementCounter);
 				Matrix leftMatrix = matrixChain.get(0);
 				Matrix rightMatrix = matrixChain.get(1);
 				int multiplyCount = leftMatrix.getRowCount() * leftMatrix.getColumnCount() * rightMatrix.getColumnCount();
@@ -71,6 +97,10 @@ class MapMemoizedMatrixChainMultiplierTask extends RecursiveTask<Matrix> {
 				optimalProduct = new Matrix(leftMatrix, rightMatrix, leftMatrix.getRowCount(), rightMatrix.getColumnCount(), multiplyCount);
 				cachedOptimalProducts.put(optimalProduct.getSimpleProductName(), optimalProduct);
 			} else {
+				LOGGER.debug(String.format("Not found chainProductName: %s in cache, computing for %d matrices.", chainProductName, matrixCount));
+				BiFunction<String, Integer, Integer> incrementCounter = (String productName, Integer computeCount) -> (computeCount == null) ? 1
+						: computeCount + 1;
+				chainProductComputeCount.compute(chainProductName, incrementCounter);
 				Quartet<Integer, Integer, Matrix, Matrix> optimalSplitResult = computeOptimalSplit(Integer.MAX_VALUE);
 
 				int minMultiplyCount = optimalSplitResult.getValue1().intValue();

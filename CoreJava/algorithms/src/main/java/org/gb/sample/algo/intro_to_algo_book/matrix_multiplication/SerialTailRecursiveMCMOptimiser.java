@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.javatuples.Pair;
 
-class SerialTailRecursiveMatrixChainMultiplier extends AbstractMatrixChainMultiplier {
+class SerialTailRecursiveMCMOptimiser extends AbstractMatrixChainMultiplicationOptimiser {
 
 	private Matrix computeProduct(Matrix first, Matrix second) {
 		int multiplyCount = first.getRowCount() * first.getColumnCount() * second.getColumnCount();

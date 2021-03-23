@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.javatuples.Quartet;
 
-class SerialRecursiveMapMemoizedMatrixChainMultiplier extends AbstractMatrixChainMultiplier {
+class SerialRecursiveMapMemoizedMCMOptimiser extends AbstractMatrixChainMultiplicationOptimiser {
 
 	private Quartet<Integer, Integer, Matrix, Matrix> computeOptimalSplit(final List<Matrix> matrixChain, final Map<String, Matrix> cachedOptimalProducts,
 			int minMultiplyCount) {
