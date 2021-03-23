@@ -10,7 +10,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
 		<spark.version>2.4.0</spark.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
 	</properties>
 
